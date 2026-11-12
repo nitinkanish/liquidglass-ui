@@ -24,6 +24,10 @@ pnpm-debug.log*
 
 # Testing
 coverage/
+e2e-results/
+e2e-report/
+test-results/
+playwright-report/
 
 # Environment
 .env

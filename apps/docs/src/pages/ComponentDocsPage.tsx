@@ -69,7 +69,7 @@ export function ComponentDocsPage() {
           <h2 id="props" className="text-2xl font-bold mt-12 mb-4">
             Props
           </h2>
-          <div className="rounded-xl border border-[var(--docs-border)] overflow-hidden">
+          <div className="max-w-full md:rounded-xl md:border md:border-[var(--docs-border)] md:overflow-x-auto">
             <PropsTable props={component.props} />
           </div>
         </div>

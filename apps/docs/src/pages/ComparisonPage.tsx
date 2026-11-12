@@ -31,13 +31,13 @@ interface ComparisonProps {
 
 function Comparison({ title, glisseComponent, ourComponent, background }: ComparisonProps) {
   return (
-    <div className="mb-12">
-      <h3 className="text-lg font-semibold mb-4 text-center">{title}</h3>
-      <div className="grid grid-cols-2 gap-6">
-        <div className="space-y-2">
+    <div className="mb-10 sm:mb-12">
+      <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">{title}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <div className="space-y-2 min-w-0">
           <div className="text-sm text-center text-[var(--docs-text-muted)]">glisse (reference)</div>
           <div
-            className="rounded-2xl overflow-hidden p-8 flex items-center justify-center min-h-[200px]"
+            className="rounded-2xl overflow-hidden p-6 sm:p-8 flex items-center justify-center min-h-[160px] sm:min-h-[200px]"
             style={{
               backgroundImage: `url(${background})`,
               backgroundSize: 'cover',
@@ -48,10 +48,10 @@ function Comparison({ title, glisseComponent, ourComponent, background }: Compar
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 min-w-0">
           <div className="text-sm text-center text-[var(--docs-text-muted)]">liquidglass-ui</div>
           <div
-            className="rounded-2xl overflow-hidden p-8 flex items-center justify-center min-h-[200px]"
+            className="rounded-2xl overflow-hidden p-6 sm:p-8 flex items-center justify-center min-h-[160px] sm:min-h-[200px]"
             style={{
               backgroundImage: `url(${background})`,
               backgroundSize: 'cover',
@@ -85,16 +85,16 @@ export function ComparisonPage() {
   ];
 
   return (
-    <div className="min-h-screen py-12 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
+    <div className="min-h-screen py-10 sm:py-12 px-4 overflow-x-hidden">
+      <div className="max-w-6xl mx-auto w-full">
+        <div className="text-center mb-10 sm:mb-12">
           <Badge variant="secondary" className="mb-4">
             Side-by-Side Comparison
           </Badge>
-          <h1 className="text-4xl font-bold mb-4">
+          <h1 className="text-[clamp(1.75rem,5vw,2.5rem)] font-bold mb-4 leading-tight">
             glisse vs <span className="gradient-text">liquidglass-ui</span>
           </h1>
-          <p className="text-[var(--docs-text-muted)] max-w-2xl mx-auto">
+          <p className="text-[var(--docs-text-muted)] max-w-2xl mx-auto text-sm sm:text-base">
             Visual comparison of the real glisse package (left) with our implementation (right).
             Both rendered at identical sizes over photographic backgrounds to show edge lensing.
           </p>

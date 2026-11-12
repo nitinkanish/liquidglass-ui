@@ -144,7 +144,8 @@ export function CommandPalette({
   const content = (
     <div
       className={cn(
-        'fixed inset-0 z-50 flex items-start justify-center pt-[15vh]',
+        'fixed inset-0 z-50 flex items-stretch sm:items-start justify-center',
+        'p-0 sm:p-4 sm:pt-[12vh]',
         'bg-black/40 backdrop-blur-sm',
         !reducedMotion && 'animate-[lg-fade-in_150ms_ease-out]'
       )}
@@ -156,20 +157,24 @@ export function CommandPalette({
         aria-labelledby={dialogId}
         className={cn(
           'lg-glass lg-glass-elevated lg-text',
-          'w-full max-w-[540px] overflow-hidden',
+          'w-full sm:max-w-[540px] overflow-hidden',
+          'h-full sm:h-auto max-h-full sm:max-h-[min(80vh,640px)]',
+          'flex flex-col rounded-none sm:rounded-2xl',
           !reducedMotion && 'animate-[lg-scale-in_150ms_var(--lg-ease-spring)]'
         )}
-        style={{ borderRadius: 16 }}
       >
-        {/* Search input */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--lg-separator)]">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lg-muted)" strokeWidth="2">
+        <div className="flex items-center gap-3 px-3 sm:px-4 min-h-[56px] border-b border-[var(--lg-separator)] shrink-0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lg-muted)" strokeWidth="2" aria-hidden>
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.35-4.35" />
           </svg>
           <input
             ref={inputRef}
-            type="text"
+            type="search"
+            enterKeyHint="search"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -179,22 +184,32 @@ export function CommandPalette({
             aria-controls={listboxId}
             aria-activedescendant={flattenedItems[selectedIndex]?.id}
             className={cn(
-              'flex-1 bg-transparent border-0 outline-none',
+              'flex-1 min-w-0 bg-transparent border-0 outline-none',
               'text-base placeholder:text-[var(--lg-muted)]'
             )}
-            style={{ color: 'var(--lg-foreground)' }}
+            style={{ color: 'var(--lg-foreground)', fontSize: 16 }}
           />
-          <kbd className="px-2 py-0.5 text-xs rounded bg-[var(--lg-glass)] text-[var(--lg-muted)]">
-            ESC
-          </kbd>
+          <button
+            type="button"
+            onClick={handleClose}
+            className="inline-flex items-center justify-center rounded-lg text-[var(--lg-muted)] border-0 bg-transparent cursor-pointer"
+            style={{ minWidth: 44, minHeight: 44 }}
+            aria-label="Close search"
+          >
+            <kbd
+              className="px-2 py-1 text-xs rounded bg-[var(--lg-glass)] text-[var(--lg-muted)] pointer-events-none"
+            >
+              ESC
+            </kbd>
+          </button>
         </div>
 
-        {/* Results list */}
         <div
           ref={listRef}
           role="listbox"
           id={listboxId}
-          className="max-h-[300px] overflow-auto p-2"
+          className="flex-1 overflow-auto overscroll-contain p-2 min-h-0"
+          style={{ maxHeight: 'min(70dvh, 480px)' }}
         >
           {flattenedItems.length === 0 ? (
             <div className="px-4 py-8 text-center text-sm text-[var(--lg-muted)]">
@@ -210,7 +225,7 @@ export function CommandPalette({
                 )}
                 {groupItems.map((item) => {
                   const isSelected = flattenedItems[selectedIndex]?.id === item.id;
-                  
+
                   return (
                     <button
                       key={item.id}
@@ -221,11 +236,12 @@ export function CommandPalette({
                       onClick={() => handleSelect(item)}
                       onMouseEnter={() => setSelectedIndex(flattenedItems.indexOf(item))}
                       className={cn(
-                        'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg',
+                        'w-full flex items-center gap-3 px-3 rounded-lg',
                         'border-0 bg-transparent text-left cursor-pointer',
                         'transition-colors',
                         isSelected && 'bg-[var(--lg-highlight)]'
                       )}
+                      style={{ minHeight: 44 }}
                     >
                       {item.icon && (
                         <span className="flex-shrink-0 w-5 h-5 text-[var(--lg-muted)]">
@@ -243,7 +259,7 @@ export function CommandPalette({
                         )}
                       </div>
                       {item.shortcut && (
-                        <kbd className="px-2 py-0.5 text-xs rounded bg-[var(--lg-glass)] text-[var(--lg-muted)]">
+                        <kbd className="hidden sm:inline px-2 py-0.5 text-xs rounded bg-[var(--lg-glass)] text-[var(--lg-muted)]">
                           {item.shortcut}
                         </kbd>
                       )}

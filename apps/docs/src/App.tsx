@@ -24,12 +24,10 @@ function ScrollToTop() {
 
 function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12">
-      <div className="flex gap-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12 overflow-x-hidden">
+      <div className="flex gap-6 lg:gap-8">
         <DocsSidebar />
-        <main className="flex-1 min-w-0">
-          {children}
-        </main>
+        <main className="flex-1 min-w-0 max-w-full">{children}</main>
       </div>
     </div>
   );

@@ -3,6 +3,8 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    // Scan library source so component Tailwind utilities are generated
+    "../../packages/liquidglass-ui/src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {

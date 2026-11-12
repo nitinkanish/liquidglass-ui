@@ -29,14 +29,14 @@ export function CodeBlock({ code, preview }: CodeBlockProps) {
   };
 
   return (
-    <div className="rounded-xl border border-[var(--docs-border)] overflow-hidden bg-[var(--docs-bg-secondary)]">
-      {/* Tab bar */}
+    <div className="rounded-xl border border-[var(--docs-border)] overflow-hidden bg-[var(--docs-bg-secondary)] max-w-full">
       {preview && (
-        <div className="flex items-center justify-between border-b border-[var(--docs-border)] px-4">
+        <div className="flex items-center justify-between border-b border-[var(--docs-border)] px-2 sm:px-4">
           <div className="flex gap-1">
             <button
+              type="button"
               onClick={() => setActiveTab('preview')}
-              className={`px-4 py-3 text-sm font-medium transition-colors relative ${
+              className={`min-h-[44px] px-4 text-sm font-medium transition-colors relative ${
                 activeTab === 'preview'
                   ? 'text-[var(--docs-text)]'
                   : 'text-[var(--docs-text-muted)] hover:text-[var(--docs-text)]'
@@ -48,8 +48,9 @@ export function CodeBlock({ code, preview }: CodeBlockProps) {
               )}
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('code')}
-              className={`px-4 py-3 text-sm font-medium transition-colors relative ${
+              className={`min-h-[44px] px-4 text-sm font-medium transition-colors relative ${
                 activeTab === 'code'
                   ? 'text-[var(--docs-text)]'
                   : 'text-[var(--docs-text-muted)] hover:text-[var(--docs-text)]'
@@ -63,8 +64,9 @@ export function CodeBlock({ code, preview }: CodeBlockProps) {
           </div>
           {activeTab === 'code' && (
             <button
+              type="button"
               onClick={handleCopy}
-              className="p-2 rounded-lg text-[var(--docs-text-muted)] hover:text-[var(--docs-text)] hover:bg-[var(--docs-bg-elevated)] transition-colors"
+              className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg text-[var(--docs-text-muted)] hover:text-[var(--docs-text)] hover:bg-[var(--docs-bg-elevated)] transition-colors"
               aria-label="Copy code"
             >
               {copied ? <CheckIcon /> : <CopyIcon />}
@@ -73,26 +75,26 @@ export function CodeBlock({ code, preview }: CodeBlockProps) {
         </div>
       )}
 
-      {/* Content */}
       {activeTab === 'preview' && preview ? (
-        <div className="p-6 bg-gradient-to-br from-violet-500/10 via-transparent to-cyan-500/10">
-          <div className="flex items-center justify-center min-h-[200px]">
+        <div className="p-4 sm:p-6 overflow-x-auto bg-gradient-to-br from-violet-500/10 via-transparent to-cyan-500/10">
+          <div className="flex items-center justify-center min-h-[160px] sm:min-h-[200px] min-w-0">
             {preview}
           </div>
         </div>
       ) : (
-        <div className="relative">
+        <div className="relative max-w-full">
           {!preview && (
             <button
+              type="button"
               onClick={handleCopy}
-              className="absolute top-3 right-3 p-2 rounded-lg text-[var(--docs-text-muted)] hover:text-[var(--docs-text)] hover:bg-[var(--docs-bg-elevated)] transition-colors z-10"
+              className="absolute top-2 right-2 inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg text-[var(--docs-text-muted)] hover:text-[var(--docs-text)] hover:bg-[var(--docs-bg-elevated)] transition-colors z-10"
               aria-label="Copy code"
             >
               {copied ? <CheckIcon /> : <CopyIcon />}
             </button>
           )}
-          <pre className="p-4 overflow-x-auto text-sm font-mono leading-relaxed text-[var(--docs-text)]">
-            <code>{code}</code>
+          <pre className="p-4 pr-14 overflow-x-auto overscroll-x-contain text-sm font-mono leading-relaxed text-[var(--docs-text)] max-w-full">
+            <code className="whitespace-pre">{code}</code>
           </pre>
         </div>
       )}

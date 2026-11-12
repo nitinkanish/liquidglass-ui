@@ -18,49 +18,53 @@ export function LandingPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
-        {/* Glow blobs */}
-        <div className="glow-blob glow-purple w-[600px] h-[600px] -top-40 -left-40 animate-[pulse-glow_8s_ease-in-out_infinite]" />
-        <div className="glow-blob glow-cyan w-[500px] h-[500px] top-20 right-0 animate-[pulse-glow_10s_ease-in-out_infinite_2s]" />
-        <div className="glow-blob glow-pink w-[400px] h-[400px] bottom-0 left-1/3 animate-[pulse-glow_12s_ease-in-out_infinite_4s]" />
+      <section className="relative pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 overflow-hidden">
+        <div className="glow-blob glow-purple w-[min(600px,100vw)] h-[min(600px,100vw)] -top-40 -left-40 animate-[pulse-glow_8s_ease-in-out_infinite]" />
+        <div className="glow-blob glow-cyan w-[min(500px,90vw)] h-[min(500px,90vw)] top-20 right-0 animate-[pulse-glow_10s_ease-in-out_infinite_2s]" />
+        <div className="glow-blob glow-pink w-[min(400px,80vw)] h-[min(400px,80vw)] bottom-0 left-1/3 animate-[pulse-glow_12s_ease-in-out_infinite_4s]" />
 
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <Badge variant="secondary" className="mb-6">
-            ✨ 57 Components • React 18+ • TypeScript
+            57 Components • React 18+ • TypeScript
           </Badge>
-          
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tight">
+
+          <h1 className="hero-title font-bold mb-6 leading-[1.1]">
             Beautiful{' '}
             <span className="gradient-text">Liquid Glass</span>
             <br />
             UI for React
           </h1>
-          
-          <p className="text-xl text-[var(--docs-text-muted)] max-w-2xl mx-auto mb-10">
-            Advanced Apple-style glassmorphism components with backdrop blur, 
-            SVG refraction effects, and smooth animations. Build stunning interfaces 
+
+          <p className="hero-sub text-[var(--docs-text-muted)] max-w-2xl mx-auto mb-8 sm:mb-10">
+            Advanced Apple-style glassmorphism components with backdrop blur,
+            SVG refraction effects, and smooth animations. Build stunning interfaces
             that feel native to iOS 26 and macOS Tahoe.
           </p>
 
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Link to="/docs">
-              <Button variant="filled" size="lg" className="gap-2">
+          <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
+            <Link to="/docs" className="min-h-[44px]">
+              <Button variant="filled" size="lg" className="gap-2 min-h-[44px]">
                 Get Started
                 <ArrowRightIcon />
               </Button>
             </Link>
-            <a href="https://github.com/nitinkanish/liquidglass-ui" target="_blank" rel="noopener noreferrer">
-              <Button variant="glass" size="lg" className="gap-2">
+            <a
+              href="https://github.com/nitinkanish/liquidglass-ui"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="min-h-[44px]"
+            >
+              <Button variant="glass" size="lg" className="gap-2 min-h-[44px]">
                 <GithubIcon />
                 GitHub
               </Button>
             </a>
           </div>
 
-          {/* Install command */}
-          <div className="mt-12 inline-flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--docs-bg-elevated)] border border-[var(--docs-border)]">
-            <code className="text-sm font-mono text-[var(--docs-text-muted)]">
-              npm install <span className="text-[var(--docs-accent)]">@nkanish/liquidglass-ui</span>
+          <div className="mt-10 sm:mt-12 max-w-full inline-flex items-center gap-3 px-3 sm:px-4 py-3 rounded-xl bg-[var(--docs-bg-elevated)] border border-[var(--docs-border)] overflow-x-auto">
+            <code className="text-xs sm:text-sm font-mono text-[var(--docs-text-muted)] whitespace-nowrap">
+              npm install{' '}
+              <span className="text-[var(--docs-accent)]">@nkanish/liquidglass-ui</span>
             </code>
           </div>
         </div>
