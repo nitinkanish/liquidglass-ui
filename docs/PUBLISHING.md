@@ -1,6 +1,6 @@
 # Publishing Guide
 
-This guide explains how to publish `liquidglass-ui` to npm and deploy the documentation site.
+This guide explains how to publish `@nkanish/liquidglass-ui` to npm and deploy the documentation site.
 
 ## Prerequisites
 
@@ -63,7 +63,7 @@ npm pack --dry-run
 npm publish --access public
 
 # 8. Verify the package is published
-npm view liquidglass-ui
+npm view @nkanish/liquidglass-ui
 ```
 
 ### Tag-Based Release Workflow (After First Release)
@@ -124,13 +124,13 @@ npm publish --access public --tag next
 
 ```bash
 # View package info
-npm view liquidglass-ui
+npm view @nkanish/liquidglass-ui
 
 # Check latest version
-npm view liquidglass-ui version
+npm view @nkanish/liquidglass-ui version
 
 # Check all versions
-npm view liquidglass-ui versions
+npm view @nkanish/liquidglass-ui versions
 ```
 
 ### Test Installation
@@ -139,10 +139,10 @@ npm view liquidglass-ui versions
 # Create a test project
 mkdir test-liquidglass && cd test-liquidglass
 npm init -y
-npm install liquidglass-ui react react-dom
+npm install @nkanish/liquidglass-ui react react-dom
 
 # Verify the import works
-node -e "require('liquidglass-ui')"
+node -e "require('@nkanish/liquidglass-ui')"
 ```
 
 ### Check Documentation
@@ -154,7 +154,7 @@ Visit your GitHub Pages URL: https://nitinkanish.github.io/liquidglass-ui/
 ### npm publish fails with 403
 
 - Ensure your npm token has publish permissions
-- Check if the package name is available: `npm view liquidglass-ui`
+- Check if the package name is available: `npm view @nkanish/liquidglass-ui`
 - Verify you're logged in: `npm whoami`
 - If using 2FA, ensure you enter the correct OTP
 
@@ -185,7 +185,7 @@ The package name may require a paid account. Use `npm publish --access public` t
 - [ ] Committed and tagged
 - [ ] Pushed to GitHub with tags
 - [ ] GitHub Actions release workflow completed
-- [ ] Package visible on npm (`npm view liquidglass-ui`)
+- [ ] Package visible on npm (`npm view @nkanish/liquidglass-ui`)
 - [ ] Docs deployed to GitHub Pages
 
 ## Package Contents

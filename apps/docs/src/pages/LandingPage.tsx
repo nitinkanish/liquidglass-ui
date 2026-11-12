@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Button, GlassCard, Badge } from 'liquidglass-ui';
+import { Button, GlassCard, Badge } from '@nkanish/liquidglass-ui';
 import { categories, getComponentsByCategory } from '../data/components';
 
 const ArrowRightIcon = () => (
@@ -60,7 +60,7 @@ export function LandingPage() {
           {/* Install command */}
           <div className="mt-12 inline-flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--docs-bg-elevated)] border border-[var(--docs-border)]">
             <code className="text-sm font-mono text-[var(--docs-text-muted)]">
-              npm install <span className="text-[var(--docs-accent)]">liquidglass-ui</span>
+              npm install <span className="text-[var(--docs-accent)]">@nkanish/liquidglass-ui</span>
             </code>
           </div>
         </div>

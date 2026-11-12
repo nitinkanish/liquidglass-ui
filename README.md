@@ -2,7 +2,7 @@
 
 > Advanced Apple Liquid Glass (iOS 26 / macOS Tahoe) UI component library for React
 
-[![npm version](https://img.shields.io/npm/v/liquidglass-ui.svg)](https://www.npmjs.com/package/liquidglass-ui)
+[![npm version](https://img.shields.io/npm/v/@nkanish/liquidglass-ui.svg)](https://www.npmjs.com/package/@nkanish/liquidglass-ui)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## What is LiquidGlass UI?
@@ -33,12 +33,12 @@ LiquidGlass UI brings Apple's beautiful Liquid Glass design language to the web.
 ## Quick Start
 
 ```bash
-npm install liquidglass-ui
+npm install @nkanish/liquidglass-ui
 ```
 
 ```tsx
-import { GlassProvider, Button, GlassCard } from 'liquidglass-ui';
-import 'liquidglass-ui/styles.css';
+import { GlassProvider, Button, GlassCard } from '@nkanish/liquidglass-ui';
+import '@nkanish/liquidglass-ui/styles.css';
 
 function App() {
   return (

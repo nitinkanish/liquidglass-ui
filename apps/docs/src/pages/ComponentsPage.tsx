@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { GlassCard, SearchField } from 'liquidglass-ui';
+import { GlassCard, SearchField } from '@nkanish/liquidglass-ui';
 import { useState, useMemo } from 'react';
 import { categories, components, getComponentsByCategory } from '../data/components';
 

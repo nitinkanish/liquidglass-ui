@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useTheme, Drawer } from 'liquidglass-ui';
+import { useTheme, Drawer } from '@nkanish/liquidglass-ui';
 import { DocsSidebar } from './DocsSidebar';
 
 const GithubIcon = () => (

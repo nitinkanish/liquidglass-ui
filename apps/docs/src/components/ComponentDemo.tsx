@@ -44,7 +44,7 @@ import {
   FAB,
   GlassCard,
   Glass,
-} from 'liquidglass-ui';
+} from '@nkanish/liquidglass-ui';
 import { CodeBlock } from './CodeBlock';
 
 interface ComponentDemoProps {
@@ -636,7 +636,7 @@ export function ComponentDemo({ componentName, slug }: ComponentDemoProps) {
 
   const demo = demos[slug] || {
     preview: <p className="text-[var(--docs-text-muted)]">Demo coming soon for {componentName}</p>,
-    code: `import { ${componentName} } from 'liquidglass-ui';`,
+    code: `import { ${componentName} } from '@nkanish/liquidglass-ui';`,
   };
 
   return <CodeBlock code={demo.code} preview={demo.preview} />;

@@ -22,7 +22,7 @@ export function ComponentDocsPage() {
 
   const category = categories.find(c => c.id === component.category);
 
-  const importCode = `import { ${component.name} } from 'liquidglass-ui';`;
+  const importCode = `import { ${component.name} } from '@nkanish/liquidglass-ui';`;
 
   return (
     <div className="flex gap-12">

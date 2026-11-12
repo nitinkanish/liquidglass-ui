@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { GlassProvider, CommandPalette, ToastProvider } from 'liquidglass-ui';
+import { GlassProvider, CommandPalette, ToastProvider } from '@nkanish/liquidglass-ui';
 import { Navbar } from './components/Navbar';
 import { DocsSidebar } from './components/DocsSidebar';
 import { Footer } from './components/Footer';
@@ -123,24 +123,24 @@ function InstallationPage() {
       
       <h2 className="text-2xl font-bold mt-12 mb-4">npm</h2>
       <pre className="bg-[var(--docs-bg-elevated)] p-4 rounded-lg overflow-x-auto">
-        <code>npm install liquidglass-ui</code>
+        <code>npm install @nkanish/liquidglass-ui</code>
       </pre>
 
       <h2 className="text-2xl font-bold mt-12 mb-4">pnpm</h2>
       <pre className="bg-[var(--docs-bg-elevated)] p-4 rounded-lg overflow-x-auto">
-        <code>pnpm add liquidglass-ui</code>
+        <code>pnpm add @nkanish/liquidglass-ui</code>
       </pre>
 
       <h2 className="text-2xl font-bold mt-12 mb-4">yarn</h2>
       <pre className="bg-[var(--docs-bg-elevated)] p-4 rounded-lg overflow-x-auto">
-        <code>yarn add liquidglass-ui</code>
+        <code>yarn add @nkanish/liquidglass-ui</code>
       </pre>
 
       <h2 className="text-2xl font-bold mt-12 mb-4">Setup</h2>
       <p>Wrap your app with <code>GlassProvider</code> and import the styles:</p>
       <pre className="bg-[var(--docs-bg-elevated)] p-4 rounded-lg overflow-x-auto text-sm">
-        <code>{`import { GlassProvider } from 'liquidglass-ui';
-import 'liquidglass-ui/styles.css';
+        <code>{`import { GlassProvider } from '@nkanish/liquidglass-ui';
+import '@nkanish/liquidglass-ui/styles.css';
 
 function App() {
   return (
@@ -200,7 +200,7 @@ function ThemingPage() {
       <h2 className="text-2xl font-bold mt-12 mb-4">Programmatic Theming</h2>
       <p>Use the <code>useTheme</code> hook to control the theme programmatically:</p>
       <pre className="bg-[var(--docs-bg-elevated)] p-4 rounded-lg overflow-x-auto text-sm">
-        <code>{`import { useTheme } from 'liquidglass-ui';
+        <code>{`import { useTheme } from '@nkanish/liquidglass-ui';
 
 function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();

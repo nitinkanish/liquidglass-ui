@@ -39,7 +39,7 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://www.npmjs.com/package/liquidglass-ui" target="_blank" rel="noopener noreferrer" className="text-[var(--docs-text-muted)] hover:text-[var(--docs-text)] transition-colors">
+                <a href="https://www.npmjs.com/package/@nkanish/liquidglass-ui" target="_blank" rel="noopener noreferrer" className="text-[var(--docs-text-muted)] hover:text-[var(--docs-text)] transition-colors">
                   npm
                 </a>
               </li>

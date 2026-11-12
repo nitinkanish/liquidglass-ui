@@ -1,4 +1,4 @@
-import { GlassCard, Button } from 'liquidglass-ui';
+import { GlassCard, Button } from '@nkanish/liquidglass-ui';
 import { Link } from 'react-router-dom';
 import { CodeBlock } from '../components/CodeBlock';
 import { TableOfContents } from '../components/TableOfContents';
@@ -10,10 +10,10 @@ const tocItems = [
   { id: 'next-steps', title: 'Next Steps', level: 2 },
 ];
 
-const installCode = `npm install liquidglass-ui`;
+const installCode = `npm install @nkanish/liquidglass-ui`;
 
-const basicUsageCode = `import { GlassProvider, Button, GlassCard } from 'liquidglass-ui';
-import 'liquidglass-ui/styles.css';
+const basicUsageCode = `import { GlassProvider, Button, GlassCard } from '@nkanish/liquidglass-ui';
+import '@nkanish/liquidglass-ui/styles.css';
 
 function App() {
   return (
