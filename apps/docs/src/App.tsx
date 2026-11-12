@@ -8,6 +8,7 @@ import { LandingPage } from './pages/LandingPage';
 import { DocsPage } from './pages/DocsPage';
 import { ComponentDocsPage } from './pages/ComponentDocsPage';
 import { ComponentsPage } from './pages/ComponentsPage';
+import { ComparisonPage } from './pages/ComparisonPage';
 import { components } from './data/components';
 import './styles/globals.css';
 
@@ -67,6 +68,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/components" element={<ComponentsPage />} />
+        <Route path="/refraction" element={<ComparisonPage />} />
         <Route
           path="/docs"
           element={

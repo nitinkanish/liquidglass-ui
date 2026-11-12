@@ -23,12 +23,22 @@ LiquidGlass UI brings Apple's beautiful Liquid Glass design language to the web.
 ## Key Features
 
 - **57 Components** - Comprehensive UI toolkit with 41 component files
-- **Authentic Glass Effect** - Backdrop blur with SVG displacement filters
+- **Authentic Glass Effect** - Glisse-compatible SVG refraction with edge lensing, chromatic aberration, and specular highlights
 - **Dark Mode** - Automatic light/dark theme switching
 - **Accessible** - Full ARIA support and keyboard navigation
 - **TypeScript** - Complete type definitions
 - **Zero Dependencies** - Only React as peer dependency
 - **86 Tests** - Comprehensive test coverage
+
+## Glass Refraction
+
+The glass refraction effect is based on [glisse](https://www.npmjs.com/package/glisse) (MIT License) by Caleb Brewer. Enable it on any Glass component:
+
+```tsx
+<Glass refraction refractionDepth={8} refractionDome={4} shine={0.3}>
+  Content with edge refraction effect
+</Glass>
+```
 
 ## Quick Start
 
@@ -54,7 +64,7 @@ function App() {
 
 ## Documentation
 
-See the full documentation and live demos: [Documentation Site](https://nitinkanish.github.io/liquidglass-ui/)
+See the full documentation and live demos: [Documentation Site](https://liquidglass-ui-docs.vercel.app/)
 
 ## Repository Structure
 

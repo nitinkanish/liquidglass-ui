@@ -147,7 +147,7 @@ node -e "require('@nkanish/liquidglass-ui')"
 
 ### Check Documentation
 
-Visit your GitHub Pages URL: https://nitinkanish.github.io/liquidglass-ui/
+Visit your GitHub Pages URL: https://liquidglass-ui-docs.vercel.app/
 
 ## Troubleshooting
 

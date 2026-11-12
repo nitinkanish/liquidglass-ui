@@ -16,7 +16,11 @@ export {
   useControllable,
   usePressedState,
   useId,
+  useGlisseEffect,
+  clearGlisseCache,
 } from './hooks';
+
+export type { UseGlisseEffectOptions, GlisseEffectResult } from './hooks';
 
 // Core utilities
 export {

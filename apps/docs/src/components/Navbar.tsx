@@ -89,7 +89,7 @@ export function Navbar({ onSearchOpen }: NavbarProps) {
               </div>
               <span className="font-semibold text-lg hidden sm:block">LiquidGlass UI</span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--docs-accent)]/20 text-[var(--docs-accent)] font-medium">
-                v0.1.0
+                v0.2.0
               </span>
             </Link>
 
@@ -110,6 +110,14 @@ export function Navbar({ onSearchOpen }: NavbarProps) {
                 }`}
               >
                 Components
+              </Link>
+              <Link
+                to="/refraction"
+                className={`text-sm transition-colors ${
+                  isActive('/refraction') ? 'text-[var(--docs-text)]' : 'text-[var(--docs-text-muted)] hover:text-[var(--docs-text)]'
+                }`}
+              >
+                Refraction
               </Link>
             </nav>
 

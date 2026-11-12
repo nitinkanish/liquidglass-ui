@@ -1,12 +1,13 @@
 {
   "name": "@nkanish/liquidglass-ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Advanced Apple Liquid Glass (iOS 26 / macOS Tahoe) UI component library for React with SVG refraction effects, backdrop blur, and beautiful animations",
   "keywords": [
     "react",
     "liquid glass",
     "glass",
     "glassmorphism",
+    "glisse",
     "ui",
     "components",
     "ios",
@@ -23,7 +24,7 @@
   ],
   "license": "MIT",
   "author": "Nitin Kanish, Debugged Pro",
-  "homepage": "https://nitinkanish.github.io/liquidglass-ui/",
+  "homepage": "https://liquidglass-ui-docs.vercel.app/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nitinkanish/liquidglass-ui.git"
@@ -60,7 +61,8 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "scripts": {
     "dev": "tsup --watch",
