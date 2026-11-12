@@ -1,7 +1,19 @@
-import { forwardRef, HTMLAttributes, ReactNode, ElementType, CSSProperties, useState } from 'react';
+/**
+ * TabBar — glisse-compatible floating glass selection lens
+ */
+import {
+  forwardRef,
+  HTMLAttributes,
+  ReactNode,
+  ElementType,
+  CSSProperties,
+  useState,
+  useRef,
+} from 'react';
 import { cn } from '../utils/cn';
 import { useControllable } from '../hooks/use-controllable';
 import { useReducedMotion } from '../hooks/use-reduced-motion';
+import { useGlisseEffect } from '../hooks/use-glisse-effect';
 
 export interface TabBarItem {
   value: string;
@@ -10,7 +22,8 @@ export interface TabBarItem {
   href?: string;
 }
 
-export interface TabBarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange'> {
+export interface TabBarProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange'> {
   items: TabBarItem[];
   value?: string | null;
   defaultValue?: string | null;
@@ -43,13 +56,34 @@ export const TabBar = forwardRef<HTMLDivElement, TabBarProps>(
 
     const [lift, setLift] = useState(0);
     const reducedMotion = useReducedMotion();
+    const containerRef = useRef<HTMLElement>(null);
+    const lensRef = useRef<HTMLDivElement>(null);
 
-    const selectedIndex = items.findIndex(item => item.value === value);
-    const hasIcons = items.some(item => item.icon);
+    const selectedIndex = items.findIndex((item) => item.value === value);
+    const hasIcons = items.some((item) => item.icon);
 
     const tabWidth = hasIcons ? 72 : 84;
     const tabHeight = hasIcons ? 52 : 32;
     const inset = 4;
+    const lensGrowX = hasIcons ? 24 : 27;
+    const lensGrowY = hasIcons ? 16 : 20;
+
+    const { filterUrl: containerFilter, rimGradient: containerRim, isReady: containerReady } =
+      useGlisseEffect(containerRef, {
+        enabled: !reducedMotion,
+        depth: 6,
+        dome: 3,
+      });
+
+    const { filterUrl: lensFilter, rimGradient: lensRim, isReady: lensReady } = useGlisseEffect(
+      lensRef,
+      {
+        enabled: !reducedMotion && lift > 0.01,
+        depth: 4,
+        dome: 3,
+        splay: 0.5,
+      }
+    );
 
     const handleSelect = (itemValue: string) => {
       setValue(itemValue);
@@ -63,53 +97,59 @@ export const TabBar = forwardRef<HTMLDivElement, TabBarProps>(
       setLift(0);
     };
 
+    const setRefs = (node: HTMLElement | null) => {
+      (containerRef as React.MutableRefObject<HTMLElement | null>).current = node;
+      if (typeof ref === 'function') ref(node as HTMLDivElement);
+      else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node as HTMLDivElement;
+    };
+
     const containerStyles: CSSProperties = {
       padding: inset,
       borderRadius: tabHeight / 2 + inset,
+      ...(containerReady && containerFilter
+        ? { filter: containerFilter, backgroundImage: containerRim }
+        : {}),
       ...style,
     };
 
     const lensStyles: CSSProperties = {
-      '--lg-lift': lift,
       position: 'absolute',
-      top: inset,
-      left: inset,
-      width: tabWidth + lift * 27,
-      height: tabHeight + lift * 20,
-      marginTop: -lift * 10,
-      marginLeft: -lift * 13.5,
-      borderRadius: (tabHeight + lift * 20) / 2,
-      transform: `translateX(${selectedIndex * tabWidth}px) scale(${1 + lift * 0.05})`,
-      transition: reducedMotion ? 'none' : 'transform 200ms var(--lg-ease-spring), width 150ms var(--lg-ease), height 150ms var(--lg-ease), margin 150ms var(--lg-ease)',
-      background: 'var(--lg-selection)',
-      boxShadow: lift > 0.5 
-        ? `0 ${7 / (1 + lift * 0.5)}px ${11 / (1 + lift * 0.5)}px var(--lg-lens-drop)` 
-        : 'none',
-    } as CSSProperties;
+      top: inset - (lift * lensGrowY) / 2,
+      left: inset - (lift * lensGrowX) / 2,
+      width: tabWidth + lift * lensGrowX,
+      height: tabHeight + lift * lensGrowY,
+      borderRadius: (tabHeight + lift * lensGrowY) / 2,
+      transform: `translateX(${Math.max(0, selectedIndex) * tabWidth}px)`,
+      transition: reducedMotion
+        ? 'none'
+        : 'transform 200ms cubic-bezier(.25,.1,.25,1), width 150ms cubic-bezier(.25,.1,.25,1), height 150ms cubic-bezier(.25,.1,.25,1), top 150ms, left 150ms, background-color 140ms',
+      backgroundColor: lift > 0.5 ? 'var(--lg-lens)' : 'var(--lg-selection)',
+      boxShadow:
+        lift > 0.5
+          ? `0 ${7 / (1 + lift * 0.5)}px ${11 / (1 + lift * 0.5)}px var(--lg-lens-drop)`
+          : 'none',
+      pointerEvents: 'none',
+      zIndex: lift > 0.5 ? 2 : 0,
+      ...(lensReady && lensFilter
+        ? { filter: lensFilter, backgroundImage: lensRim }
+        : {}),
+    };
 
     return (
       <nav
-        ref={ref}
+        ref={setRefs}
         role="tablist"
         aria-label={ariaLabel}
-        className={cn(
-          'lg-glass lg-interactive',
-          'relative inline-flex',
-          className
-        )}
+        className={cn('lg-glass lg-interactive', 'relative inline-flex', className)}
         style={containerStyles}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         {...props}
       >
-        {/* Lens/Selection indicator */}
-        {selectedIndex >= 0 && (
-          <div className="lg-glass" style={lensStyles} />
-        )}
+        {selectedIndex >= 0 && <div ref={lensRef} aria-hidden style={lensStyles} />}
 
-        {/* Tabs */}
-        <div className="relative flex z-10">
+        <div className="relative flex z-[1]">
           {items.map((item) => {
             const isSelected = item.value === value;
             const TabElement = item.href && LinkComponent ? LinkComponent : 'button';
@@ -120,6 +160,7 @@ export const TabBar = forwardRef<HTMLDivElement, TabBarProps>(
                 role="tab"
                 aria-selected={isSelected}
                 href={item.href}
+                type={TabElement === 'button' ? 'button' : undefined}
                 onClick={() => handleSelect(item.value)}
                 className={cn(
                   'flex flex-col items-center justify-center',
@@ -130,8 +171,10 @@ export const TabBar = forwardRef<HTMLDivElement, TabBarProps>(
                 style={{
                   width: tabWidth,
                   height: tabHeight,
-                  color: isSelected 
-                    ? (hasIcons ? 'var(--lg-fill)' : 'var(--lg-foreground)') 
+                  color: isSelected
+                    ? hasIcons
+                      ? 'var(--lg-fill)'
+                      : 'var(--lg-foreground)'
                     : 'var(--lg-muted)',
                 }}
               >
@@ -140,9 +183,7 @@ export const TabBar = forwardRef<HTMLDivElement, TabBarProps>(
                     {item.icon}
                   </span>
                 )}
-                {(showLabels || !item.icon) && (
-                  <span className="block">{item.label}</span>
-                )}
+                {(showLabels || !item.icon) && <span className="block">{item.label}</span>}
               </TabElement>
             );
           })}

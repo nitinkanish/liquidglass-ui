@@ -1,10 +1,24 @@
-import { forwardRef, InputHTMLAttributes, CSSProperties, useState, useRef, useCallback } from 'react';
+/**
+ * Slider — glisse-compatible glass thumb pill on a rail
+ *
+ * Thumb is 60×40 at scale 0.6 (visual ~36×24), matching glisse.
+ */
+import {
+  forwardRef,
+  InputHTMLAttributes,
+  CSSProperties,
+  useState,
+  useRef,
+  useCallback,
+} from 'react';
 import { cn } from '../utils/cn';
 import { useControllable } from '../hooks/use-controllable';
 import { useReducedMotion } from '../hooks/use-reduced-motion';
-import { clamp, mapRange } from '../utils';
+import { useGlisseEffect } from '../hooks/use-glisse-effect';
+import { mapRange } from '../utils';
 
-export interface SliderProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value' | 'defaultValue' | 'onChange'> {
+export interface SliderProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value' | 'defaultValue' | 'onChange'> {
   value?: number;
   defaultValue?: number;
   onValueChange?: (value: number) => void;
@@ -14,6 +28,14 @@ export interface SliderProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
   showValue?: boolean;
   formatValue?: (value: number) => string;
 }
+
+const THUMB_SHADOW = `
+  0 6px 24px rgba(0,0,0,0.2),
+  inset 0 0 0 1.5px rgba(255,255,255,0.5),
+  inset 0 2px 1px rgba(255,255,255,0.45),
+  inset 2px 7px 24px rgba(0,0,0,0.09),
+  inset -2px -7px 24px rgba(255,255,255,0.16)
+`;
 
 export const Slider = forwardRef<HTMLInputElement, SliderProps>(
   (
@@ -42,17 +64,29 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
     const [lift, setLift] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
     const reducedMotion = useReducedMotion();
-    const trackRef = useRef<HTMLDivElement>(null);
+    const thumbRef = useRef<HTMLDivElement>(null);
 
     const currentValue = value ?? defaultValue;
     const progress = mapRange(currentValue, min, max, 0, 1);
+    const thumbScale = 0.6 + lift * 0.4;
 
-    const handlePointerDown = useCallback((e: React.PointerEvent) => {
-      if (disabled) return;
-      setIsDragging(true);
-      if (!reducedMotion) setLift(1);
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    }, [disabled, reducedMotion]);
+    const { filterUrl, rimGradient, isReady } = useGlisseEffect(thumbRef, {
+      enabled: !reducedMotion,
+      depth: 2,
+      dome: 6,
+      splay: 0.4,
+      shine: 0.3,
+    });
+
+    const handlePointerDown = useCallback(
+      (e: React.PointerEvent) => {
+        if (disabled) return;
+        setIsDragging(true);
+        if (!reducedMotion) setLift(1);
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      },
+      [disabled, reducedMotion]
+    );
 
     const handlePointerUp = useCallback(() => {
       setIsDragging(false);
@@ -64,28 +98,35 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
     };
 
     const thumbStyles: CSSProperties = {
-      '--lg-lift': lift,
-      '--lg-progress': progress,
-      left: `calc(${progress * 100}% - 18px)`,
-      width: 36 + lift * 24,
-      height: 36 + lift * 4,
-      transform: `scale(${0.6 + lift * 0.15})`,
-      transition: reducedMotion || isDragging ? 'none' : 'transform 150ms var(--lg-ease), width 150ms var(--lg-ease), height 150ms var(--lg-ease)',
-    } as CSSProperties;
+      position: 'absolute',
+      top: 0,
+      left: `calc((100% - 36px) * ${progress} - 12px)`,
+      width: 60,
+      height: 40,
+      transform: `scale(${thumbScale})`,
+      transformOrigin: 'center center',
+      transition:
+        reducedMotion || isDragging
+          ? 'none'
+          : 'transform 150ms cubic-bezier(.25,.1,.25,1), left 50ms linear',
+      borderRadius: 9999,
+      backdropFilter: `blur(${2 * (1 - lift) + 0.5 * lift}px) brightness(${1 + 0.15 * (1 - lift)}) saturate(1.5)`,
+      WebkitBackdropFilter: `blur(${2 * (1 - lift) + 0.5 * lift}px) brightness(${1 + 0.15 * (1 - lift)}) saturate(1.5)`,
+      boxShadow: THUMB_SHADOW,
+      pointerEvents: 'none',
+      ...(isReady && filterUrl
+        ? { filter: filterUrl, backgroundImage: rimGradient }
+        : {}),
+    };
 
     return (
       <div
-        ref={trackRef}
-        className={cn(
-          'relative w-full h-10',
-          disabled && 'opacity-35',
-          className
-        )}
+        className={cn('relative w-full h-10', disabled && 'opacity-35', className)}
         style={style}
       >
-        {/* Track background */}
+        {/* Rail */}
         <div
-          className="absolute rounded-full"
+          className="absolute rounded-[3px] pointer-events-none"
           style={{
             top: 17,
             left: 0,
@@ -93,42 +134,31 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
             height: 6,
             backgroundColor: 'var(--lg-rail)',
           }}
-        />
-
-        {/* Fill */}
-        <div
-          className="absolute rounded-full"
-          style={{
-            top: 17,
-            left: 0,
-            width: `calc(${progress * 100}%)`,
-            height: 6,
-            backgroundColor: 'var(--lg-fill)',
-            transition: isDragging ? 'none' : 'width 50ms linear',
-          }}
-        />
-
-        {/* Thumb */}
-        <div
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            ...thumbStyles,
-            top: 2,
-            backdropFilter: `blur(${2 * (1 - lift) + 0.5 * lift}px) brightness(${1 + 0.15 * (1 - lift)}) saturate(1.5)`,
-            boxShadow: `
-              0 6px 24px rgb(0 0 0 / 0.2),
-              inset 0 0 0 1.5px rgb(255 255 255 / 0.5),
-              inset 0 2px 1px rgb(255 255 255 / 0.45)
-            `,
-          }}
         >
           <span
-            className="absolute inset-0 rounded-full bg-white"
-            style={{ opacity: 1 - lift * 0.3 }}
+            className="block h-full rounded-[inherit]"
+            style={{
+              width: `calc((100% - 36px) * ${progress} + 18px)`,
+              backgroundColor: 'var(--lg-fill)',
+              transition: isDragging ? 'none' : 'width 50ms linear',
+            }}
           />
         </div>
 
-        {/* Native input for accessibility */}
+        {/* Glass thumb pill */}
+        <div ref={thumbRef} aria-hidden style={thumbStyles}>
+          <span
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: 'inherit',
+              backgroundColor: '#fff',
+              opacity: 1 - lift * 0.85,
+            }}
+          />
+        </div>
+
         <input
           ref={ref}
           type="range"
@@ -150,10 +180,9 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
           {...props}
         />
 
-        {/* Value display */}
         {showValue && (
           <div
-            className="absolute text-xs font-medium text-center"
+            className="absolute text-xs font-medium text-center pointer-events-none"
             style={{
               left: `${progress * 100}%`,
               top: -20,

@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { 
-  GlassCard as OurGlassCard, 
-  Button as OurButton, 
+import {
+  GlassCard as OurGlassCard,
+  Button as OurButton,
   Switch as OurSwitch,
   Slider as OurSlider,
   TabBar as OurTabBar,
   SegmentedControl as OurSegmentedControl,
-  Badge 
+  Badge,
 } from '@nkanish/liquidglass-ui';
-import { 
-  Glass as GlisseGlass, 
-  Button as GlisseButton, 
+import {
+  Glass as GlisseGlass,
+  Button as GlisseButton,
   Switch as GlisseSwitch,
   Slider as GlisseSlider,
   TabBar as GlisseTabBar,
@@ -18,8 +18,9 @@ import {
 } from 'glisse';
 import 'glisse/styles.css';
 
-const PHOTOGRAPHIC_BACKGROUND = 'https://images.unsplash.com/photo-1557683316-973673baf926?w=1200&q=80';
-const GRADIENT_BACKGROUND = 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f857a6 50%, #ff5858 75%, #f09819 100%)';
+/** Local photographic backgrounds — detail textures show edge lensing clearly */
+const DETAIL_BG = '/images/newspaper.jpg';
+const STRIPES_BG = '/images/stripes.jpg';
 
 interface ComparisonProps {
   title: string;
@@ -33,26 +34,28 @@ function Comparison({ title, glisseComponent, ourComponent, background }: Compar
     <div className="mb-12">
       <h3 className="text-lg font-semibold mb-4 text-center">{title}</h3>
       <div className="grid grid-cols-2 gap-6">
-        {/* Glisse (reference) */}
         <div className="space-y-2">
           <div className="text-sm text-center text-[var(--docs-text-muted)]">glisse (reference)</div>
-          <div 
+          <div
             className="rounded-2xl overflow-hidden p-8 flex items-center justify-center min-h-[200px]"
-            style={{ 
-              background: background.startsWith('http') ? `url(${background}) center/cover` : background 
+            style={{
+              backgroundImage: `url(${background})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
             }}
           >
             {glisseComponent}
           </div>
         </div>
-        
-        {/* Ours */}
+
         <div className="space-y-2">
           <div className="text-sm text-center text-[var(--docs-text-muted)]">liquidglass-ui</div>
-          <div 
+          <div
             className="rounded-2xl overflow-hidden p-8 flex items-center justify-center min-h-[200px]"
-            style={{ 
-              background: background.startsWith('http') ? `url(${background}) center/cover` : background 
+            style={{
+              backgroundImage: `url(${background})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
             }}
           >
             {ourComponent}
@@ -85,30 +88,31 @@ export function ComparisonPage() {
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <Badge variant="secondary" className="mb-4">Side-by-Side Comparison</Badge>
+          <Badge variant="secondary" className="mb-4">
+            Side-by-Side Comparison
+          </Badge>
           <h1 className="text-4xl font-bold mb-4">
             glisse vs <span className="gradient-text">liquidglass-ui</span>
           </h1>
           <p className="text-[var(--docs-text-muted)] max-w-2xl mx-auto">
             Visual comparison of the real glisse package (left) with our implementation (right).
-            Both are rendered at identical sizes over the same photographic backgrounds.
+            Both rendered at identical sizes over photographic backgrounds to show edge lensing.
           </p>
         </div>
 
-        {/* Panel/Card Comparison */}
         <Comparison
           title="Glass Panel / Card"
-          background={PHOTOGRAPHIC_BACKGROUND}
+          background={DETAIL_BG}
           glisseComponent={
             <GlisseGlass className="w-[300px] p-6 rounded-2xl">
               <h3 className="text-white text-xl font-semibold mb-2">Glass Panel</h3>
               <p className="text-white/80 text-sm">
-                This is glisse's Glass component with edge refraction and specular highlights.
+                This is glisse&apos;s Glass component with edge refraction and specular highlights.
               </p>
             </GlisseGlass>
           }
           ourComponent={
-            <OurGlassCard className="w-[300px] p-6 rounded-2xl">
+            <OurGlassCard className="w-[300px] p-6 rounded-2xl" padding="lg">
               <h3 className="text-white text-xl font-semibold mb-2">Glass Panel</h3>
               <p className="text-white/80 text-sm">
                 This is our GlassCard component with glisse-compatible refraction.
@@ -117,10 +121,9 @@ export function ComparisonPage() {
           }
         />
 
-        {/* Button Comparison */}
         <Comparison
           title="Glass Button / Pill"
-          background={GRADIENT_BACKGROUND}
+          background={STRIPES_BG}
           glisseComponent={
             <div className="flex flex-col gap-4 items-center">
               <GlisseButton>Glass Button</GlisseButton>
@@ -135,10 +138,9 @@ export function ComparisonPage() {
           }
         />
 
-        {/* Switch Comparison */}
         <Comparison
           title="Switch / Toggle"
-          background={PHOTOGRAPHIC_BACKGROUND}
+          background={DETAIL_BG}
           glisseComponent={
             <GlisseSwitch checked={switchChecked} onCheckedChange={setSwitchChecked} />
           }
@@ -147,10 +149,9 @@ export function ComparisonPage() {
           }
         />
 
-        {/* Slider Comparison */}
         <Comparison
           title="Slider"
-          background={GRADIENT_BACKGROUND}
+          background={STRIPES_BG}
           glisseComponent={
             <div className="w-[250px]">
               <GlisseSlider value={sliderValue} onValueChange={setSliderValue} min={0} max={100} />
@@ -163,47 +164,36 @@ export function ComparisonPage() {
           }
         />
 
-        {/* TabBar Comparison */}
         <Comparison
           title="Tab Bar"
-          background={PHOTOGRAPHIC_BACKGROUND}
+          background={DETAIL_BG}
           glisseComponent={
-            <GlisseTabBar 
-              items={tabItems} 
-              value={selectedTab} 
-              onValueChange={setSelectedTab}
-            />
+            <GlisseTabBar items={tabItems} value={selectedTab} onValueChange={setSelectedTab} />
           }
           ourComponent={
-            <OurTabBar 
-              items={tabItems} 
-              value={selectedTab} 
-              onValueChange={setSelectedTab}
-            />
+            <OurTabBar items={tabItems} value={selectedTab} onValueChange={setSelectedTab} />
           }
         />
 
-        {/* SegmentedControl Comparison */}
         <Comparison
           title="Segmented Control"
-          background={GRADIENT_BACKGROUND}
+          background={STRIPES_BG}
           glisseComponent={
-            <GlisseSegmentedControl 
-              items={segmentItems} 
-              value={selectedSegment} 
+            <GlisseSegmentedControl
+              items={segmentItems}
+              value={selectedSegment}
               onValueChange={setSelectedSegment}
             />
           }
           ourComponent={
-            <OurSegmentedControl 
-              items={segmentItems} 
-              value={selectedSegment} 
+            <OurSegmentedControl
+              items={segmentItems}
+              value={selectedSegment}
               onValueChange={setSelectedSegment}
             />
           }
         />
 
-        {/* Technical notes */}
         <OurGlassCard className="p-6 mt-12 max-w-2xl mx-auto">
           <h2 className="text-lg font-semibold mb-4">Implementation Notes</h2>
           <div className="text-sm text-[var(--docs-text-muted)] space-y-2">
@@ -217,10 +207,10 @@ export function ComparisonPage() {
             </ul>
             <p className="mt-4">
               Our implementation is based on{' '}
-              <a 
-                href="https://www.npmjs.com/package/glisse" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://www.npmjs.com/package/glisse"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-[var(--docs-accent)] hover:underline"
               >
                 glisse
