@@ -13,7 +13,7 @@
     "test:e2e": "playwright test",
     "test:e2e:chromium": "playwright test --project=chromium-desktop --project=chromium-mobile",
     "lint": "pnpm -r lint",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm build:lib && pnpm -r typecheck",
     "check:pack": "pnpm build:lib && cd packages/liquidglass-ui && publint && npm pack --dry-run",
     "format": "prettier --write \"**/*.{ts,tsx,css,md,json}\"",
     "clean": "pnpm -r clean"
