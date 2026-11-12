@@ -1,14 +1,18 @@
 import { Link, useLocation } from 'react-router-dom';
 import { categories, getComponentsByCategory } from '../data/components';
 
-export function DocsSidebar() {
+interface DocsSidebarProps {
+  className?: string;
+}
+
+export function DocsSidebar({ className }: DocsSidebarProps) {
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <aside className="w-64 shrink-0 hidden lg:block">
-      <div className="sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto pb-8 pr-4">
+    <aside className={className || "w-64 shrink-0 hidden lg:block"}>
+      <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] overflow-y-auto pb-8 lg:pr-4">
         {/* Getting Started */}
         <div className="mb-6">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--docs-text-muted)] mb-3">

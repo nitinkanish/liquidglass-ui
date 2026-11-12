@@ -11,26 +11,14 @@ LiquidGlass UI brings Apple's beautiful Liquid Glass design language to the web.
 
 ## Screenshots
 
-### Hero / Landing Page
-![Hero](docs/assets/liquidglass-hero.png)
+### Landing Page (Dark Theme)
+![Landing Page](https://raw.githubusercontent.com/nitinkanish/liquidglass-ui/main/docs/assets/docs-landing-dark.png)
 
-### Buttons
-![Buttons](docs/assets/liquidglass-buttons.png)
+### Component Documentation
+![Component Docs](https://raw.githubusercontent.com/nitinkanish/liquidglass-ui/main/docs/assets/docs-component-page.png)
 
-### Form Controls
-![Forms](docs/assets/liquidglass-forms.png)
-
-### Navigation
-![Navigation](docs/assets/liquidglass-navigation.png)
-
-### Data Display
-![Data Display](docs/assets/liquidglass-data-display.png)
-
-### Advanced Overlays (Drawer, Popover, Context Menu, Command Palette)
-![Overlays](docs/assets/liquidglass-overlays.png)
-
-### Floating Action Button
-![FAB](docs/assets/liquidglass-fab.png)
+### Mobile View
+![Mobile](https://raw.githubusercontent.com/nitinkanish/liquidglass-ui/main/docs/assets/docs-mobile.png)
 
 ## Key Features
 
@@ -66,7 +54,7 @@ function App() {
 
 ## Documentation
 
-See the full documentation and live demos: [Documentation Site](https://nitinkanish.github.io/liquidglass-ui)
+See the full documentation and live demos: [Documentation Site](https://nitinkanish.github.io/liquidglass-ui/)
 
 ## Repository Structure
 

@@ -36,7 +36,6 @@ function DocsLayout({ children }: { children: React.ReactNode }) {
 
 function AppContent() {
   const [searchOpen, setSearchOpen] = useState(false);
-  const location = useLocation();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -59,8 +58,6 @@ function AppContent() {
       setSearchOpen(false);
     },
   }));
-
-  const isLandingPage = location.pathname === '/';
 
   return (
     <>
@@ -104,7 +101,7 @@ function AppContent() {
         />
       </Routes>
 
-      {!isLandingPage && <Footer />}
+      <Footer />
 
       <CommandPalette
         open={searchOpen}

@@ -21,7 +21,7 @@ git push -u origin main
 
 ### 2. Configure npm Authentication
 
-Add your npm token to GitHub Secrets:
+Add your npm token to GitHub Secrets for automated publishing:
 
 1. Go to your repository Settings > Secrets and variables > Actions
 2. Click "New repository secret"
@@ -34,11 +34,44 @@ Add your npm token to GitHub Secrets:
 2. Source: "GitHub Actions"
 3. The docs will be deployed automatically on push to main
 
-## Publishing Workflow
+## Publishing to npm
 
-### 1. Update Version
+### Manual Publishing (Recommended for First Release)
 
 ```bash
+# 1. Login to npm (run once)
+npm login
+# Enter your npm username, password, and email when prompted
+# If using 2FA, you'll be prompted for your OTP
+
+# 2. Verify you're logged in
+npm whoami
+
+# 3. Navigate to the package directory
+cd packages/liquidglass-ui
+
+# 4. Build the package
+pnpm build
+
+# 5. Run tests to ensure everything works
+pnpm test
+
+# 6. Preview what will be published (dry run)
+npm pack --dry-run
+
+# 7. Publish to npm with public access
+npm publish --access public
+
+# 8. Verify the package is published
+npm view liquidglass-ui
+```
+
+### Tag-Based Release Workflow (After First Release)
+
+For subsequent releases, use the tag-based workflow:
+
+```bash
+# 1. Update the version
 cd packages/liquidglass-ui
 
 # For patch release (0.1.0 -> 0.1.1)
@@ -49,46 +82,40 @@ npm version minor
 
 # For major release (0.1.0 -> 1.0.0)
 npm version major
-```
 
-### 2. Update Changelog
+# 2. Update CHANGELOG.md with release notes
 
-Edit `CHANGELOG.md` with the new version's changes following the Keep a Changelog format.
-
-### 3. Commit and Tag
-
-```bash
-# Commit the version bump
+# 3. Commit the version bump
 git add .
 git commit -m "chore: release v$(node -p "require('./packages/liquidglass-ui/package.json').version")"
 
-# Create a tag
-git tag v$(node -p "require('./packages/liquidglass-ui/package.json').version")
+# 4. Create a git tag
+VERSION=$(node -p "require('./packages/liquidglass-ui/package.json').version")
+git tag "v$VERSION"
 
-# Push with tags
-git push && git push --tags
+# 5. Push with tags
+git push origin main
+git push origin "v$VERSION"
 ```
 
-### 4. Automated Release
-
-The GitHub Actions release workflow will:
+The GitHub Actions release workflow will automatically:
 1. Run tests
 2. Build the library
-3. Publish to npm
+3. Publish to npm (when tag is pushed)
 
-### Manual Publishing (if needed)
+### Publishing Pre-releases
 
 ```bash
-cd packages/liquidglass-ui
+# For alpha releases
+npm version prerelease --preid=alpha
+# 0.1.0 -> 0.1.1-alpha.0
 
-# Build
-pnpm build
+# For beta releases
+npm version prerelease --preid=beta
+# 0.1.1-alpha.0 -> 0.1.1-beta.0
 
-# Dry run to check what will be published
-npm pack --dry-run
-
-# Publish (requires npm login)
-npm publish
+# Publish with a tag
+npm publish --access public --tag next
 ```
 
 ## Verifying the Release
@@ -96,7 +123,14 @@ npm publish
 ### Check npm
 
 ```bash
+# View package info
 npm view liquidglass-ui
+
+# Check latest version
+npm view liquidglass-ui version
+
+# Check all versions
+npm view liquidglass-ui versions
 ```
 
 ### Test Installation
@@ -106,11 +140,14 @@ npm view liquidglass-ui
 mkdir test-liquidglass && cd test-liquidglass
 npm init -y
 npm install liquidglass-ui react react-dom
+
+# Verify the import works
+node -e "require('liquidglass-ui')"
 ```
 
 ### Check Documentation
 
-Visit your GitHub Pages URL: `https://nitinkanish.github.io/liquidglass-ui`
+Visit your GitHub Pages URL: https://nitinkanish.github.io/liquidglass-ui/
 
 ## Troubleshooting
 
@@ -119,6 +156,11 @@ Visit your GitHub Pages URL: `https://nitinkanish.github.io/liquidglass-ui`
 - Ensure your npm token has publish permissions
 - Check if the package name is available: `npm view liquidglass-ui`
 - Verify you're logged in: `npm whoami`
+- If using 2FA, ensure you enter the correct OTP
+
+### npm publish fails with E402 Payment Required
+
+The package name may require a paid account. Use `npm publish --access public` to publish as a public scoped package.
 
 ### GitHub Actions fails
 
@@ -136,14 +178,14 @@ Visit your GitHub Pages URL: `https://nitinkanish.github.io/liquidglass-ui`
 
 - [ ] All tests pass (`pnpm test`)
 - [ ] Build succeeds (`pnpm build`)
-- [ ] Docs build succeeds (`pnpm build:docs`)
+- [ ] Docs build succeeds (`pnpm --filter @liquidglass/docs build`)
 - [ ] `npm pack --dry-run` shows correct files
 - [ ] Version bumped in `packages/liquidglass-ui/package.json`
 - [ ] CHANGELOG.md updated
 - [ ] Committed and tagged
 - [ ] Pushed to GitHub with tags
 - [ ] GitHub Actions release workflow completed
-- [ ] Package visible on npm
+- [ ] Package visible on npm (`npm view liquidglass-ui`)
 - [ ] Docs deployed to GitHub Pages
 
 ## Package Contents
@@ -151,14 +193,18 @@ Visit your GitHub Pages URL: `https://nitinkanish.github.io/liquidglass-ui`
 The published package includes:
 
 ```
-liquidglass-ui/
+liquidglass-ui-0.1.0.tgz
 ├── dist/
-│   ├── index.js       # ESM bundle
-│   ├── index.cjs      # CommonJS bundle
+│   ├── index.js       # ESM bundle (175 KB)
+│   ├── index.cjs      # CommonJS bundle (187 KB)
 │   ├── index.d.ts     # TypeScript types (ESM)
 │   ├── index.d.cts    # TypeScript types (CJS)
-│   └── styles.css     # CSS styles
+│   ├── index.js.map   # Source map
+│   ├── index.cjs.map  # Source map
+│   └── styles.css     # CSS styles (10 KB)
 ├── LICENSE
 ├── README.md
 └── package.json
 ```
+
+Total package size: ~192 KB (compressed)
