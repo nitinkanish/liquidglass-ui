@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Attribution
 
-Glass refraction implementation based on [glisse](https://www.npmjs.com/package/glisse) (MIT License) by Caleb Brewer.
+Glass refraction implementation based on [glisse](https://github.com/0kzh/glisse) (MIT License) by Kelvin Zhang.
 
 ## [0.1.0] - 2026-11-12
 

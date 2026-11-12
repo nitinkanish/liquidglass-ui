@@ -1,15 +1,15 @@
 # Third Party Notices
 
-This file contains notices for third-party software used in this project.
+This file contains attributions for third-party code used in LiquidGlass UI.
 
 ## glisse
 
-The glass refraction effect implementation in this library is based on [glisse](https://www.npmjs.com/package/glisse).
+The glass refraction effect implementation is based on [glisse](https://github.com/0kzh/glisse).
 
 ```
 MIT License
 
-Copyright (c) 2024 Caleb Brewer
+Copyright (c) 2024 Kelvin Zhang
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,13 +30,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### What was adapted
+### Attribution
 
-The following components from glisse were adapted for use in liquidglass-ui:
+The following files contain code derived from glisse:
 
-- **Displacement Map Generation** (`lensMap` function): Mathematical calculation of edge-based displacement values for lens refraction effect
-- **SVG Filter Chain** (`buildFilter` function): Construction of SVG filter elements for chromatic aberration and edge refraction
-- **Rim Light Calculation**: Light direction-based edge highlight computation
-- **CSS Custom Properties**: Theme variable naming conventions for glass styling
+- `src/hooks/use-glisse-effect.ts` - SVG displacement map generation and filter chain
+- `src/components/Glass.tsx` - Refraction effect integration
 
-The original implementation was written in TypeScript and has been adapted to work within the liquidglass-ui component architecture while maintaining visual fidelity to the original effect.
+The implementation ports glisse's displacement map generation algorithm (lensMap function),
+SVG filter construction (buildFilter), and PNG encoding for feImage elements.

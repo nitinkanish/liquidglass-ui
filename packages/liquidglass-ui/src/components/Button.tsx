@@ -1,6 +1,8 @@
-import { forwardRef, ButtonHTMLAttributes, ReactNode, CSSProperties } from 'react';
+import { forwardRef, ButtonHTMLAttributes, ReactNode, CSSProperties, useRef } from 'react';
 import { cn } from '../utils/cn';
 import { usePressedState } from '../hooks/use-pressed-state';
+import { useGlisseEffect } from '../hooks/use-glisse-effect';
+import { useReducedMotion } from '../hooks/use-reduced-motion';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'glass' | 'filled' | 'outlined' | 'ghost';
@@ -11,6 +13,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   tint?: string;
   loading?: boolean;
   fullWidth?: boolean;
+  /** Disable glisse refraction effect. Defaults to false (refraction enabled for glass variant). */
+  disableRefraction?: boolean;
 }
 
 const sizeStyles = {
@@ -54,13 +58,26 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       loading = false,
       fullWidth = false,
       disabled,
+      disableRefraction = false,
       children,
       ...props
     },
     ref
   ) => {
+    const localRef = useRef<HTMLButtonElement>(null);
+    const combinedRef = (ref as React.RefObject<HTMLButtonElement>) || localRef;
     const { isPressed, pressHandlers } = usePressedState({ disabled: disabled || loading });
+    const reducedMotion = useReducedMotion();
     const sizeConfig = sizeStyles[size];
+    
+    // Refraction for glass variant buttons
+    const shouldRefract = variant === 'glass' && !disableRefraction && !reducedMotion;
+    const { filterUrl, rimGradient, isReady } = useGlisseEffect(combinedRef, {
+      enabled: shouldRefract,
+      depth: 6,
+      dome: 3,
+      shine: 0.25,
+    });
 
     const customStyles: CSSProperties & Record<string, string | number | undefined> = {
       height: sizeConfig.height,
@@ -74,6 +91,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (tint && !destructive) {
       customStyles['--lg-tint'] = tint;
+    }
+
+    // Apply refraction effect
+    if (shouldRefract && isReady && filterUrl) {
+      customStyles.filter = filterUrl;
+      customStyles.backgroundImage = rimGradient;
     }
 
     const baseClasses = cn(
@@ -104,7 +127,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button
-        ref={ref}
+        ref={combinedRef}
         className={baseClasses}
         style={{ ...customStyles, ...variantStyles }}
         disabled={disabled || loading}

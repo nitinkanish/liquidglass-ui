@@ -1,11 +1,15 @@
-import { forwardRef, HTMLAttributes, CSSProperties } from 'react';
+import { forwardRef, HTMLAttributes, CSSProperties, useRef } from 'react';
 import { cn } from '../utils/cn';
+import { useGlisseEffect } from '../hooks/use-glisse-effect';
+import { useReducedMotion } from '../hooks/use-reduced-motion';
 
 export interface GlassCardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'elevated' | 'outlined';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   radius?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   hoverable?: boolean;
+  /** Disable glisse refraction effect. Defaults to false (refraction enabled). */
+  disableRefraction?: boolean;
 }
 
 const paddingMap = {
@@ -16,11 +20,11 @@ const paddingMap = {
 };
 
 const radiusMap = {
-  sm: 'var(--lg-radius-sm)',
-  md: 'var(--lg-radius)',
-  lg: 'var(--lg-radius-lg)',
-  xl: 'var(--lg-radius-xl)',
-  full: 'var(--lg-radius-full)',
+  sm: '8px',
+  md: '12px',
+  lg: '16px',
+  xl: '20px',
+  full: '9999px',
 };
 
 export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
@@ -32,16 +36,30 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
       padding = 'md',
       radius = 'lg',
       hoverable = false,
+      disableRefraction = false,
       children,
       ...props
     },
     ref
   ) => {
+    const localRef = useRef<HTMLDivElement>(null);
+    const combinedRef = (ref as React.RefObject<HTMLDivElement>) || localRef;
+    const reducedMotion = useReducedMotion();
+    
+    const { filterUrl, rimGradient, isReady } = useGlisseEffect(combinedRef, {
+      enabled: !disableRefraction && !reducedMotion,
+    });
+
     const customStyles: CSSProperties = {
       padding: paddingMap[padding],
       borderRadius: radiusMap[radius],
       ...style,
     };
+
+    if (isReady && filterUrl) {
+      customStyles.filter = filterUrl;
+      customStyles.backgroundImage = rimGradient;
+    }
 
     const baseClasses = cn(
       'lg-glass',
@@ -52,7 +70,7 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
     );
 
     return (
-      <div ref={ref} className={baseClasses} style={customStyles} {...props}>
+      <div ref={combinedRef} className={baseClasses} style={customStyles} {...props}>
         {children}
       </div>
     );

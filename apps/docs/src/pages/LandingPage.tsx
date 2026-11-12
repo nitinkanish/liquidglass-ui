@@ -66,18 +66,23 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Why <span className="gradient-text">LiquidGlass UI</span>?
+      {/* Features Section - with vivid background for refraction visibility */}
+      <section 
+        className="py-20 px-4 relative"
+        style={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f857a6 50%, #ff5858 75%, #f09819 100%)',
+        }}
+      >
+        <div className="max-w-6xl mx-auto relative z-10">
+          <h2 className="text-3xl font-bold text-center mb-12 text-white">
+            Why <span className="text-white/90">LiquidGlass UI</span>?
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <GlassCard className="p-6">
               <div className="text-3xl mb-4">🎨</div>
-              <h3 className="text-lg font-semibold mb-2">Apple-Inspired Design</h3>
-              <p className="text-[var(--docs-text-muted)] text-sm">
+              <h3 className="text-lg font-semibold mb-2 text-white">Apple-Inspired Design</h3>
+              <p className="text-white/70 text-sm">
                 Authentic Liquid Glass aesthetics with backdrop blur, 
                 refraction effects, and specular highlights.
               </p>
@@ -85,8 +90,8 @@ export function LandingPage() {
             
             <GlassCard className="p-6">
               <div className="text-3xl mb-4">♿</div>
-              <h3 className="text-lg font-semibold mb-2">Fully Accessible</h3>
-              <p className="text-[var(--docs-text-muted)] text-sm">
+              <h3 className="text-lg font-semibold mb-2 text-white">Fully Accessible</h3>
+              <p className="text-white/70 text-sm">
                 Complete ARIA support, keyboard navigation, 
                 and screen reader compatibility built-in.
               </p>
@@ -94,8 +99,8 @@ export function LandingPage() {
             
             <GlassCard className="p-6">
               <div className="text-3xl mb-4">⚡</div>
-              <h3 className="text-lg font-semibold mb-2">High Performance</h3>
-              <p className="text-[var(--docs-text-muted)] text-sm">
+              <h3 className="text-lg font-semibold mb-2 text-white">High Performance</h3>
+              <p className="text-white/70 text-sm">
                 GPU-accelerated animations, respects prefers-reduced-motion, 
                 zero runtime dependencies.
               </p>
@@ -103,8 +108,8 @@ export function LandingPage() {
             
             <GlassCard className="p-6">
               <div className="text-3xl mb-4">🌙</div>
-              <h3 className="text-lg font-semibold mb-2">Dark Mode Ready</h3>
-              <p className="text-[var(--docs-text-muted)] text-sm">
+              <h3 className="text-lg font-semibold mb-2 text-white">Dark Mode Ready</h3>
+              <p className="text-white/70 text-sm">
                 Automatic light/dark theme switching with CSS custom properties 
                 for easy customization.
               </p>
@@ -112,16 +117,16 @@ export function LandingPage() {
             
             <GlassCard className="p-6">
               <div className="text-3xl mb-4">📦</div>
-              <h3 className="text-lg font-semibold mb-2">Tree-Shakeable</h3>
-              <p className="text-[var(--docs-text-muted)] text-sm">
+              <h3 className="text-lg font-semibold mb-2 text-white">Tree-Shakeable</h3>
+              <p className="text-white/70 text-sm">
                 ESM + CJS builds with proper exports. Only ship what you use.
               </p>
             </GlassCard>
             
             <GlassCard className="p-6">
               <div className="text-3xl mb-4">🔷</div>
-              <h3 className="text-lg font-semibold mb-2">TypeScript First</h3>
-              <p className="text-[var(--docs-text-muted)] text-sm">
+              <h3 className="text-lg font-semibold mb-2 text-white">TypeScript First</h3>
+              <p className="text-white/70 text-sm">
                 Complete type definitions with excellent IntelliSense support.
               </p>
             </GlassCard>

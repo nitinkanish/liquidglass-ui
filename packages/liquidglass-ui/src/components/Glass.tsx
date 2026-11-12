@@ -1,9 +1,9 @@
 /**
- * Glass Component - Apple Liquid Glass effect
+ * Glass Component - Apple Liquid Glass effect with glisse-style refraction
  * 
  * Refraction implementation based on glisse (MIT License)
- * https://www.npmjs.com/package/glisse
- * Copyright (c) 2024 Caleb Brewer
+ * https://github.com/0kzh/glisse
+ * Copyright (c) 2024 Kelvin Zhang
  */
 
 import { forwardRef, useRef, HTMLAttributes, CSSProperties } from 'react';
@@ -12,6 +12,7 @@ import { usePointerPosition } from '../hooks/use-pointer-position';
 import { useReducedMotion } from '../hooks/use-reduced-motion';
 import { useGlisseEffect } from '../hooks/use-glisse-effect';
 import { createRimLightGradient } from '../core/svg-filters';
+import { useRefraction } from './GlassProvider';
 
 export interface GlassProps extends HTMLAttributes<HTMLDivElement> {
   /** Visual variant */
@@ -24,17 +25,20 @@ export interface GlassProps extends HTMLAttributes<HTMLDivElement> {
   tint?: string;
   /** Enable pointer tracking for highlight effect */
   interactive?: boolean;
-  /** Show rim light gradient */
+  /** Show rim light gradient (legacy, superseded by refraction) */
   rimLight?: boolean;
-  /** Enable glisse-style edge refraction (requires element dimensions) */
+  /** 
+   * Enable glisse-style edge refraction with chromatic aberration and specular highlights.
+   * Defaults to true. Set to false to disable.
+   */
   refraction?: boolean;
-  /** Refraction depth (pixels from edge) */
+  /** Refraction depth in pixels from edge. Default: 8 */
   refractionDepth?: number;
-  /** Dome curvature for refraction */
+  /** Dome curvature for lens effect. Default: 4 */
   refractionDome?: number;
-  /** Specular shine intensity (-2 to 2) */
+  /** Specular shine intensity (-2 to 2). Default: 0.3 */
   shine?: number;
-  /** Light angle for rim and refraction (degrees) */
+  /** Light angle in degrees for rim and refraction. Default: 225 */
   lightAngle?: number;
 }
 
@@ -49,11 +53,11 @@ export const Glass = forwardRef<HTMLDivElement, GlassProps>(
       tint,
       interactive = false,
       rimLight = false,
-      refraction = false,
-      refractionDepth = 8,
-      refractionDome = 4,
-      shine = 0.3,
-      lightAngle = 30,
+      refraction,
+      refractionDepth,
+      refractionDome,
+      shine,
+      lightAngle,
       children,
       ...props
     },
@@ -64,13 +68,23 @@ export const Glass = forwardRef<HTMLDivElement, GlassProps>(
     const reducedMotion = useReducedMotion();
     const pointerPosition = usePointerPosition(combinedRef, { enabled: interactive && !reducedMotion });
     
+    // Get global refraction config
+    const globalRefraction = useRefraction();
+    
+    // Resolve refraction settings (prop overrides global)
+    const shouldRefract = refraction ?? globalRefraction.enabled;
+    const depth = refractionDepth ?? globalRefraction.depth;
+    const dome = refractionDome ?? globalRefraction.dome;
+    const shineValue = shine ?? globalRefraction.shine;
+    const angle = lightAngle ?? globalRefraction.lightAngle;
+    
     // Glisse-style refraction effect
     const { filterUrl, rimGradient: glisseRim, isReady } = useGlisseEffect(combinedRef, {
-      enabled: refraction && !reducedMotion,
-      depth: refractionDepth,
-      dome: refractionDome,
-      shine,
-      lightAngle,
+      enabled: shouldRefract && !reducedMotion,
+      depth,
+      dome,
+      shine: shineValue,
+      lightAngle: angle,
     });
 
     const customStyles: CSSProperties & Record<string, string | number | undefined> = {
@@ -90,14 +104,14 @@ export const Glass = forwardRef<HTMLDivElement, GlassProps>(
     }
 
     // Apply rim light gradient
-    if (refraction && isReady) {
+    if (shouldRefract && isReady) {
       customStyles.backgroundImage = glisseRim;
     } else if (rimLight) {
-      customStyles.backgroundImage = createRimLightGradient({ intensity: 0.15, angle: lightAngle });
+      customStyles.backgroundImage = createRimLightGradient({ intensity: 0.15, angle });
     }
 
     // Apply refraction filter
-    if (refraction && filterUrl && isReady) {
+    if (shouldRefract && filterUrl && isReady) {
       customStyles.filter = filterUrl;
     }
 
@@ -119,7 +133,7 @@ export const Glass = forwardRef<HTMLDivElement, GlassProps>(
         className={cn(variantClasses[variant], className)}
         style={customStyles}
         data-hover={interactive && pointerPosition.isInside ? '' : undefined}
-        data-rim={refraction && isReady ? '' : undefined}
+        data-rim={shouldRefract && isReady ? '' : undefined}
         {...props}
       >
         {children}

@@ -11,14 +11,14 @@ LiquidGlass UI brings Apple's beautiful Liquid Glass design language to the web.
 
 ## Screenshots
 
-### Landing Page (Dark Theme)
-![Landing Page](https://raw.githubusercontent.com/nitinkanish/liquidglass-ui/main/docs/assets/docs-landing-dark.png)
+### Landing Page with Refraction Effect
+![Landing Page](https://raw.githubusercontent.com/nitinkanish/liquidglass-ui/main/docs/assets/docs-landing-refraction.png)
+
+### Side-by-Side Comparison with glisse
+![Comparison](https://raw.githubusercontent.com/nitinkanish/liquidglass-ui/main/docs/assets/comparison-full.png)
 
 ### Component Documentation
-![Component Docs](https://raw.githubusercontent.com/nitinkanish/liquidglass-ui/main/docs/assets/docs-component-page.png)
-
-### Mobile View
-![Mobile](https://raw.githubusercontent.com/nitinkanish/liquidglass-ui/main/docs/assets/docs-mobile.png)
+![Component Docs](https://raw.githubusercontent.com/nitinkanish/liquidglass-ui/main/docs/assets/docs-component-button.png)
 
 ## Key Features
 
@@ -32,7 +32,7 @@ LiquidGlass UI brings Apple's beautiful Liquid Glass design language to the web.
 
 ## Glass Refraction
 
-The glass refraction effect is based on [glisse](https://www.npmjs.com/package/glisse) (MIT License) by Caleb Brewer. Enable it on any Glass component:
+The glass refraction effect is based on [glisse](https://github.com/0kzh/glisse) (MIT License) by Kelvin Zhang. Enable it on any Glass component:
 
 ```tsx
 <Glass refraction refractionDepth={8} refractionDome={4} shine={0.3}>

@@ -1,9 +1,9 @@
 /**
- * Hook for managing glisse-style glass refraction effects
+ * Glisse-compatible glass refraction effect hook
  * 
  * Based on glisse (MIT License)
- * https://www.npmjs.com/package/glisse
- * Copyright (c) 2024 Caleb Brewer
+ * https://github.com/0kzh/glisse
+ * Copyright (c) 2024 Kelvin Zhang
  */
 
 import { useEffect, useRef, useState, useCallback, RefObject } from 'react';
@@ -39,18 +39,16 @@ interface LensMap {
   across: Uint8ClampedArray;
   down: Uint8ClampedArray;
   light: Uint8ClampedArray;
-  shape: Uint8ClampedArray;
 }
 
 interface EncodedMaps {
   across: string;
   down: string;
   light: string;
-  shape: string;
 }
 
 const DEFAULT_LIGHT: LightOptions = {
-  angle: 30,
+  angle: 225,
   glow: 0.4,
   spread: 0.5,
   glowPower: 2,
@@ -121,7 +119,6 @@ function lensMap(
   const pullAcross = new Uint8ClampedArray(columns * rows * 4);
   const pullDown = new Uint8ClampedArray(columns * rows * 4);
   const caught = new Uint8ClampedArray(columns * rows * 4);
-  const shapeMask = new Uint8ClampedArray(columns * rows * 4);
 
   const share = options.relative ? Math.min(width, height) : 1;
   const depth = options.depth * share;
@@ -149,9 +146,6 @@ function lensMap(
       const x = ((column + 0.5) / columns) * width - halfWidth;
       const y = ((row + 0.5) / rows) * height - halfHeight;
       const edge = distance(x, y, halfWidth, halfHeight, radius);
-      const inside = Math.round(255 * clamp(-edge, 0, 1));
-
-      grey(shapeMask, i, 0, inside);
 
       if (edge >= 0) {
         grey(pullAcross, i, 128);
@@ -181,7 +175,6 @@ function lensMap(
       }
 
       const falloff = 0.5 * (1 + erf(distance(x, y, innerWidth, innerHeight, innerRadius) * ramp));
-      grey(shapeMask, i, Math.round(255 * falloff), inside);
       grey(pullAcross, i, Math.round((0.5 - 0.5 * dx * falloff) * 255));
       grey(pullDown, i, Math.round((0.5 - 0.5 * dy * falloff) * 255));
 
@@ -197,7 +190,7 @@ function lensMap(
     }
   }
 
-  return { columns, rows, across: pullAcross, down: pullDown, light: caught, shape: shapeMask };
+  return { columns, rows, across: pullAcross, down: pullDown, light: caught };
 }
 
 const encodedCache = new Map<string, EncodedMaps>();
@@ -224,7 +217,6 @@ function encode(key: string, draw: () => LensMap): EncodedMaps | null {
     across: png(map.across),
     down: png(map.down),
     light: png(map.light),
-    shape: png(map.shape),
   };
 
   encodedCache.set(key, result);
@@ -256,7 +248,6 @@ function isWebKit(): boolean {
 interface LensConfig {
   maps: EncodedMaps;
   shine: number;
-  blur: number;
 }
 
 function buildFilter(lenses: LensConfig[], box: boolean): SVGFilterElement {
@@ -276,7 +267,7 @@ function buildFilter(lenses: LensConfig[], box: boolean): SVGFilterElement {
 
   const single = lenses.length === 1;
 
-  lenses.forEach(({ maps, shine, blur: _blur }, k) => {
+  lenses.forEach(({ maps, shine }, k) => {
     const merged = (name: string) => (single ? name : `${name}-${k}`);
     const image = (href: string, result: string) =>
       svg('feImage', { href, preserveAspectRatio: 'none', result });
@@ -433,6 +424,24 @@ function buildFilter(lenses: LensConfig[], box: boolean): SVGFilterElement {
 }
 
 let filterIdCounter = 0;
+let filterContainer: HTMLElement | null = null;
+
+function getFilterContainer(): HTMLElement {
+  if (filterContainer && filterContainer.isConnected) {
+    return filterContainer;
+  }
+  
+  let container = document.getElementById('lg-glisse-filters');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'lg-glisse-filters';
+    container.innerHTML =
+      '<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none"><defs></defs></svg>';
+    document.body.appendChild(container);
+  }
+  filterContainer = container;
+  return container;
+}
 
 export interface UseGlisseEffectOptions {
   enabled?: boolean;
@@ -440,7 +449,6 @@ export interface UseGlisseEffectOptions {
   dome?: number;
   splay?: number;
   shine?: number;
-  blur?: number;
   density?: number;
   lightAngle?: number;
 }
@@ -452,7 +460,7 @@ export interface GlisseEffectResult {
 }
 
 export function useGlisseEffect(
-  ref: RefObject<HTMLElement>,
+  ref: RefObject<HTMLElement | null>,
   options: UseGlisseEffectOptions = {}
 ): GlisseEffectResult {
   const {
@@ -461,7 +469,6 @@ export function useGlisseEffect(
     dome = DEFAULT_LENS.dome,
     splay = DEFAULT_LENS.splay,
     shine = 0.3,
-    blur = 0,
     density = 0.5,
     lightAngle = DEFAULT_LIGHT.angle,
   } = options;
@@ -469,30 +476,39 @@ export function useGlisseEffect(
   const [filterUrl, setFilterUrl] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
   const filterRef = useRef<SVGFilterElement | null>(null);
-  const containerRef = useRef<HTMLElement | null>(null);
+  const currentFilterId = useRef<string | null>(null);
+  const lastDimensions = useRef<{ width: number; height: number; radius: number } | null>(null);
 
   const cleanup = useCallback(() => {
     if (filterRef.current) {
       filterRef.current.remove();
       filterRef.current = null;
     }
+    currentFilterId.current = null;
     setFilterUrl(null);
     setIsReady(false);
   }, []);
 
-  useEffect(() => {
+  const updateFilter = useCallback((el: HTMLElement) => {
     if (!enabled || typeof document === 'undefined') {
       cleanup();
       return;
     }
 
-    const el = ref.current;
-    if (!el) return;
-
     const rect = el.getBoundingClientRect();
     const width = Math.max(1, Math.round(rect.width));
     const height = Math.max(1, Math.round(rect.height));
-    const radius = parseFloat(getComputedStyle(el).borderRadius) || 20;
+    const computedStyle = getComputedStyle(el);
+    const radius = parseFloat(computedStyle.borderRadius) || 0;
+
+    // Skip if dimensions haven't changed significantly
+    if (lastDimensions.current) {
+      const { width: lw, height: lh, radius: lr } = lastDimensions.current;
+      if (Math.abs(width - lw) < 2 && Math.abs(height - lh) < 2 && Math.abs(radius - lr) < 1) {
+        return;
+      }
+    }
+    lastDimensions.current = { width, height, radius };
 
     const shape: Shape = { width, height, radius };
     const lensOpts: LensOptions = { depth, dome, splay, relative: false };
@@ -506,39 +522,54 @@ export function useGlisseEffect(
       return;
     }
 
-    const lensConfig: LensConfig = { maps, shine, blur };
+    const lensConfig: LensConfig = { maps, shine };
     const webKit = isWebKit();
     const filter = buildFilter([lensConfig], webKit);
 
     const filterId = `lg-glisse-${++filterIdCounter}`;
     filter.id = filterId;
 
-    // Get or create container
-    let container = document.getElementById('lg-glisse-filters');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'lg-glisse-filters';
-      container.innerHTML =
-        '<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none"><defs></defs></svg>';
-      document.body.appendChild(container);
-    }
-    containerRef.current = container;
-
+    const container = getFilterContainer();
     const defs = container.querySelector('defs')!;
-    
+
     // Clean up previous filter
     if (filterRef.current) {
       filterRef.current.remove();
     }
-    
+
     defs.appendChild(filter);
     filterRef.current = filter;
+    currentFilterId.current = filterId;
 
     setFilterUrl(`url(#${filterId})`);
     setIsReady(true);
+  }, [enabled, depth, dome, splay, shine, density, lightAngle, cleanup]);
 
-    return cleanup;
-  }, [ref, enabled, depth, dome, splay, shine, blur, density, lightAngle, cleanup]);
+  useEffect(() => {
+    if (!enabled || typeof document === 'undefined' || typeof ResizeObserver === 'undefined') {
+      cleanup();
+      return;
+    }
+
+    const el = ref.current;
+    if (!el) return;
+
+    // Initial setup
+    updateFilter(el);
+
+    // Watch for resizes
+    const observer = new ResizeObserver(() => {
+      if (ref.current) {
+        updateFilter(ref.current);
+      }
+    });
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+      cleanup();
+    };
+  }, [ref, enabled, updateFilter, cleanup]);
 
   const rimGradient = `linear-gradient(${lightAngle + 90}deg, 
     rgba(255,255,255,0.12) 0%, 

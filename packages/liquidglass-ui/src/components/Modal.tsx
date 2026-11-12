@@ -2,6 +2,7 @@ import { forwardRef, HTMLAttributes, ReactNode, CSSProperties, useEffect, useCal
 import { createPortal } from 'react-dom';
 import { cn } from '../utils/cn';
 import { useReducedMotion } from '../hooks/use-reduced-motion';
+import { useGlisseEffect } from '../hooks/use-glisse-effect';
 
 export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   open: boolean;
@@ -13,6 +14,8 @@ export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;
   showCloseButton?: boolean;
+  /** Disable glisse refraction effect. Defaults to false (refraction enabled). */
+  disableRefraction?: boolean;
 }
 
 const sizeConfig = {
@@ -37,13 +40,19 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
       closeOnOverlayClick = true,
       closeOnEscape = true,
       showCloseButton = true,
+      disableRefraction = false,
       ...props
     },
     ref
   ) => {
     const reducedMotion = useReducedMotion();
-    const modalRef = useRef<HTMLDivElement>(null);
+    const localRef = useRef<HTMLDivElement>(null);
+    const combinedRef = (ref as React.RefObject<HTMLDivElement>) || localRef;
     const config = sizeConfig[size];
+
+    const { filterUrl, rimGradient, isReady } = useGlisseEffect(combinedRef, {
+      enabled: open && !disableRefraction && !reducedMotion,
+    });
 
     const handleClose = useCallback(() => {
       onOpenChange(false);
@@ -65,16 +74,27 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
       if (open) {
         document.addEventListener('keydown', handleKeyDown);
         document.body.style.overflow = 'hidden';
-        modalRef.current?.focus();
+        combinedRef.current?.focus();
       }
 
       return () => {
         document.removeEventListener('keydown', handleKeyDown);
         document.body.style.overflow = '';
       };
-    }, [open, handleKeyDown]);
+    }, [open, handleKeyDown, combinedRef]);
 
     if (!open) return null;
+
+    const modalStyles: CSSProperties = {
+      maxWidth: config.maxWidth,
+      borderRadius: 24,
+      ...style,
+    };
+
+    if (isReady && filterUrl) {
+      modalStyles.filter = filterUrl;
+      modalStyles.backgroundImage = rimGradient;
+    }
 
     const modalContent = (
       <div
@@ -90,7 +110,7 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
         aria-describedby={description ? 'modal-description' : undefined}
       >
         <div
-          ref={ref || modalRef}
+          ref={combinedRef}
           tabIndex={-1}
           className={cn(
             'lg-glass lg-glass-elevated lg-text',
@@ -98,11 +118,7 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
             !reducedMotion && 'animate-[lg-scale-in_200ms_var(--lg-ease-spring)]',
             className
           )}
-          style={{
-            maxWidth: config.maxWidth,
-            borderRadius: 24,
-            ...style,
-          }}
+          style={modalStyles}
           {...props}
         >
           {/* Close button */}

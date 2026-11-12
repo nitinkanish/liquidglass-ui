@@ -1,6 +1,6 @@
 // Provider & Context
-export { GlassProvider, useGlass, useTheme } from './GlassProvider';
-export type { GlassProviderProps, GlassConfig, Theme, ResolvedTheme, GlassContextValue } from './GlassProvider';
+export { GlassProvider, useGlass, useTheme, useRefraction } from './GlassProvider';
+export type { GlassProviderProps, GlassConfig, RefractionConfig, Theme, ResolvedTheme, GlassContextValue } from './GlassProvider';
 
 // Base Glass
 export { Glass } from './Glass';

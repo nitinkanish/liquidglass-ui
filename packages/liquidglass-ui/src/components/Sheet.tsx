@@ -2,6 +2,7 @@ import { forwardRef, HTMLAttributes, ReactNode, useEffect, useCallback, useRef, 
 import { createPortal } from 'react-dom';
 import { cn } from '../utils/cn';
 import { useReducedMotion } from '../hooks/use-reduced-motion';
+import { useGlisseEffect } from '../hooks/use-glisse-effect';
 
 export interface SheetProps extends HTMLAttributes<HTMLDivElement> {
   open: boolean;
@@ -10,6 +11,8 @@ export interface SheetProps extends HTMLAttributes<HTMLDivElement> {
   side?: 'bottom' | 'top' | 'left' | 'right';
   size?: 'sm' | 'md' | 'lg' | 'full';
   showHandle?: boolean;
+  /** Disable glisse refraction effect. Defaults to false (refraction enabled). */
+  disableRefraction?: boolean;
 }
 
 const sizeConfig = {
@@ -30,13 +33,19 @@ export const Sheet = forwardRef<HTMLDivElement, SheetProps>(
       side = 'bottom',
       size = 'md',
       showHandle = true,
+      disableRefraction = false,
       ...props
     },
     ref
   ) => {
     const reducedMotion = useReducedMotion();
-    const sheetRef = useRef<HTMLDivElement>(null);
+    const localRef = useRef<HTMLDivElement>(null);
+    const combinedRef = (ref as React.RefObject<HTMLDivElement>) || localRef;
     const config = sizeConfig[size];
+
+    const { filterUrl, rimGradient, isReady } = useGlisseEffect(combinedRef, {
+      enabled: open && !disableRefraction && !reducedMotion,
+    });
 
     const handleClose = useCallback(() => {
       onOpenChange(false);
@@ -68,8 +77,6 @@ export const Sheet = forwardRef<HTMLDivElement, SheetProps>(
 
     if (!open) return null;
 
-    const isHorizontal = side === 'left' || side === 'right';
-    
     const sheetStyles: CSSProperties = {
       position: 'fixed',
       zIndex: 50,
@@ -112,6 +119,11 @@ export const Sheet = forwardRef<HTMLDivElement, SheetProps>(
       ...style,
     };
 
+    if (isReady && filterUrl) {
+      sheetStyles.filter = filterUrl;
+      sheetStyles.backgroundImage = rimGradient;
+    }
+
     const animationClass = reducedMotion ? '' : {
       bottom: 'animate-[lg-slide-up_300ms_var(--lg-ease-spring)]',
       top: 'animate-[lg-slide-down_300ms_var(--lg-ease-spring)]',
@@ -131,7 +143,7 @@ export const Sheet = forwardRef<HTMLDivElement, SheetProps>(
         role="dialog"
       >
         <div
-          ref={ref || sheetRef}
+          ref={combinedRef}
           className={cn(
             'lg-glass lg-glass-elevated lg-text',
             'overflow-auto',

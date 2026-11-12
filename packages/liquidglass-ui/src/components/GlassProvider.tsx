@@ -3,6 +3,14 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 export type Theme = 'light' | 'dark' | 'system';
 export type ResolvedTheme = 'light' | 'dark';
 
+export interface RefractionConfig {
+  enabled: boolean;
+  depth: number;
+  dome: number;
+  shine: number;
+  lightAngle: number;
+}
+
 export interface GlassConfig {
   blur?: number;
   saturation?: number;
@@ -10,6 +18,7 @@ export interface GlassConfig {
   accentColor?: string;
   reducedMotion?: boolean;
   reducedTransparency?: boolean;
+  refraction?: Partial<RefractionConfig>;
 }
 
 export interface GlassContextValue {
@@ -18,7 +27,16 @@ export interface GlassContextValue {
   setTheme: (theme: Theme) => void;
   config: GlassConfig;
   setConfig: (config: Partial<GlassConfig>) => void;
+  refraction: RefractionConfig;
 }
+
+const DEFAULT_REFRACTION: RefractionConfig = {
+  enabled: true,
+  depth: 8,
+  dome: 4,
+  shine: 0.3,
+  lightAngle: 225,
+};
 
 const GlassContext = createContext<GlassContextValue | null>(null);
 
@@ -52,6 +70,11 @@ export function GlassProvider({
   });
 
   const [config, setConfigState] = useState<GlassConfig>(initialConfig);
+
+  const refraction: RefractionConfig = {
+    ...DEFAULT_REFRACTION,
+    ...config.refraction,
+  };
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
@@ -108,6 +131,7 @@ export function GlassProvider({
         setTheme,
         config,
         setConfig,
+        refraction,
       }}
     >
       {children}
@@ -126,4 +150,12 @@ export function useGlass(): GlassContextValue {
 export function useTheme(): Pick<GlassContextValue, 'theme' | 'resolvedTheme' | 'setTheme'> {
   const { theme, resolvedTheme, setTheme } = useGlass();
   return { theme, resolvedTheme, setTheme };
+}
+
+export function useRefraction(): RefractionConfig {
+  const context = useContext(GlassContext);
+  if (!context) {
+    return DEFAULT_REFRACTION;
+  }
+  return context.refraction;
 }
