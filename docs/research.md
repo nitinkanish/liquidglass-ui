@@ -2,7 +2,28 @@
 
 ## Research Methodology
 
-**REA Tool Status**: REA was successfully cloned from https://github.com/morluto/rea but requires extensive setup (npm install, configuration). To avoid delays, I used the recommended fallback approach: `npm pack glisse` to download the published tarball, combined with WebFetch for the documentation site.
+### REA Tool Investigation
+
+**REA Tool**: https://github.com/morluto/rea
+
+The REA (Reverse Engineer Anything) tool was cloned and examined. Key findings:
+
+1. **What REA Actually Is**: REA is a sophisticated MCP-based reverse engineering framework designed for:
+   - Binary analysis and disassembly
+   - Native application introspection
+   - Runtime behavior analysis
+   - Works with tools like Hopper, IDA Pro, Frida
+   
+2. **Why REA Doesn't Apply Here**: The glisse package is:
+   - A JavaScript/TypeScript npm package (not a binary)
+   - Published as readable ESM/CJS source code
+   - Has MIT license permitting direct study of source
+   
+3. **Conclusion**: REA is designed for reverse engineering compiled binaries and native code, not for analyzing open-source JavaScript libraries. Using `npm pack` to download the published package and examining its source code is the appropriate research method for UI component libraries.
+
+### Fallback Research Method
+
+We used the standard approach for npm package analysis: `npm pack glisse` to download the published tarball, combined with WebFetch for the documentation site.
 
 **Sources Analyzed**:
 1. npm package tarball (glisse@0.5.0, 242.3 kB unpacked)

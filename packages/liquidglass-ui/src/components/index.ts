@@ -108,3 +108,26 @@ export type { SeparatorProps } from './Separator';
 
 export { Skeleton } from './Skeleton';
 export type { SkeletonProps } from './Skeleton';
+
+// Advanced Overlays
+export { Drawer } from './Drawer';
+export type { DrawerProps } from './Drawer';
+
+export { Popover } from './Popover';
+export type { PopoverProps } from './Popover';
+
+export { ContextMenu } from './ContextMenu';
+export type { ContextMenuProps, ContextMenuItem } from './ContextMenu';
+
+export { CommandPalette } from './CommandPalette';
+export type { CommandPaletteProps, CommandItem } from './CommandPalette';
+
+// Interactive
+export { Carousel } from './Carousel';
+export type { CarouselProps } from './Carousel';
+
+export { FloatingActionButton, FAB } from './FloatingActionButton';
+export type { FloatingActionButtonProps } from './FloatingActionButton';
+
+export { DatePicker } from './DatePicker';
+export type { DatePickerProps } from './DatePicker';

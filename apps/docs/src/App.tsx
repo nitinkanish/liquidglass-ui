@@ -34,6 +34,13 @@ import {
   Separator,
   Toggle,
   useTheme,
+  Drawer,
+  Popover,
+  ContextMenu,
+  CommandPalette,
+  Carousel,
+  FAB,
+  DatePicker,
 } from 'liquidglass-ui';
 
 const HomeIcon = () => (
@@ -76,6 +83,29 @@ const MoonIcon = () => (
   </svg>
 );
 
+const PlusIcon = () => (
+  <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
+
+
+const SearchIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="11" cy="11" r="8" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+
+const FileIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+  </svg>
+);
+
+
 function App() {
   const { setTheme, resolvedTheme } = useTheme();
   const { toast } = useToast();
@@ -84,6 +114,23 @@ function App() {
   const [wifiEnabled, setWifiEnabled] = useState(true);
   const [selectedTab, setSelectedTab] = useState('home');
   const [selectedSegment, setSelectedSegment] = useState('week');
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  const commandItems = [
+    { id: 'new-file', label: 'Create New File', description: 'Create a blank file', icon: <FileIcon />, onSelect: () => toast({ title: 'Creating file...' }), group: 'files' },
+    { id: 'open', label: 'Open File', description: 'Open an existing file', icon: <FileIcon />, shortcut: '⌘O', onSelect: () => toast({ title: 'Opening...' }), group: 'files' },
+    { id: 'search', label: 'Search Everything', description: 'Search across all files', icon: <SearchIcon />, shortcut: '⌘⇧F', onSelect: () => toast({ title: 'Searching...' }) },
+    { id: 'settings', label: 'Open Settings', description: 'Configure preferences', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>, shortcut: '⌘,', onSelect: () => toast({ title: 'Opening settings...' }) },
+  ];
+
+  const contextMenuItems = [
+    { label: 'Copy', shortcut: '⌘C', onSelect: () => toast({ title: 'Copied!' }) },
+    { label: 'Paste', shortcut: '⌘V', onSelect: () => toast({ title: 'Pasted!' }) },
+    'separator' as const,
+    { label: 'Delete', destructive: true, onSelect: () => toast({ title: 'Deleted!', variant: 'error' as const }) },
+  ];
 
   return (
     <div className="min-h-screen demo-bg">
@@ -402,7 +449,151 @@ function App() {
             <Spinner size={48} color="var(--lg-accent)" />
           </div>
         </GlassCard>
+
+        {/* Advanced Overlays */}
+        <GlassCard>
+          <h2 className="text-2xl font-semibold mb-6">Advanced Overlays</h2>
+          
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-medium mb-3">Drawer</h3>
+              <Button onClick={() => setDrawerOpen(true)}>Open Drawer</Button>
+            </div>
+
+            <Separator />
+
+            <div>
+              <h3 className="font-medium mb-3">Popover</h3>
+              <div className="flex gap-4">
+                <Popover
+                  content={
+                    <div className="w-64">
+                      <h4 className="font-semibold mb-2">Popover Content</h4>
+                      <p className="text-sm text-[var(--lg-muted)]">
+                        This is a glass popover with some helpful content inside.
+                      </p>
+                    </div>
+                  }
+                >
+                  <Button variant="outlined">Click Me</Button>
+                </Popover>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div>
+              <h3 className="font-medium mb-3">Context Menu</h3>
+              <ContextMenu items={contextMenuItems}>
+                <GlassCard variant="outlined" padding="md" className="cursor-context-menu text-center">
+                  Right-click this card to see the context menu
+                </GlassCard>
+              </ContextMenu>
+            </div>
+
+            <Separator />
+
+            <div>
+              <h3 className="font-medium mb-3">Command Palette</h3>
+              <Button onClick={() => setCommandPaletteOpen(true)}>
+                Open Command Palette (⌘K)
+              </Button>
+              <p className="text-sm text-[var(--lg-muted)] mt-2">
+                Try searching for "file" or "settings"
+              </p>
+            </div>
+          </div>
+        </GlassCard>
+
+        {/* Carousel */}
+        <GlassCard>
+          <h2 className="text-2xl font-semibold mb-6">Carousel</h2>
+          <Carousel showDots showArrows>
+            <GlassCard variant="elevated" className="h-48 flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-4xl mb-2">🎨</div>
+                <h3 className="text-xl font-semibold">Beautiful Design</h3>
+                <p className="text-[var(--lg-muted)]">Apple-inspired glass aesthetics</p>
+              </div>
+            </GlassCard>
+            <GlassCard variant="elevated" className="h-48 flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-4xl mb-2">♿</div>
+                <h3 className="text-xl font-semibold">Fully Accessible</h3>
+                <p className="text-[var(--lg-muted)]">ARIA compliant & keyboard navigable</p>
+              </div>
+            </GlassCard>
+            <GlassCard variant="elevated" className="h-48 flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-4xl mb-2">⚡</div>
+                <h3 className="text-xl font-semibold">High Performance</h3>
+                <p className="text-[var(--lg-muted)]">GPU-accelerated animations</p>
+              </div>
+            </GlassCard>
+          </Carousel>
+        </GlassCard>
+
+        {/* Date Picker */}
+        <GlassCard>
+          <h2 className="text-2xl font-semibold mb-6">Date Picker</h2>
+          <div className="flex flex-wrap items-center gap-4">
+            <DatePicker 
+              value={selectedDate}
+              onValueChange={setSelectedDate}
+              placeholder="Choose a date"
+            />
+            {selectedDate && (
+              <Badge variant="secondary">
+                Selected: {selectedDate.toLocaleDateString()}
+              </Badge>
+            )}
+          </div>
+        </GlassCard>
       </div>
+
+      {/* Floating Action Button Demo */}
+      <FAB
+        icon={<PlusIcon />}
+        aria-label="Add new item"
+        position="bottom-right"
+        variant="primary"
+        onClick={() => toast({ title: 'FAB clicked!', description: 'Floating Action Button works great.' })}
+      />
+
+      {/* Drawer */}
+      <Drawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        title="Settings"
+        description="Customize your preferences"
+      >
+        <div className="space-y-4 p-4">
+          <div className="flex items-center justify-between">
+            <span>Notifications</span>
+            <Switch defaultChecked aria-label="Notifications" />
+          </div>
+          <div className="flex items-center justify-between">
+            <span>Dark Mode</span>
+            <Switch 
+              checked={resolvedTheme === 'dark'}
+              onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+              aria-label="Dark mode"
+            />
+          </div>
+          <Separator />
+          <Button variant="filled" className="w-full" onClick={() => setDrawerOpen(false)}>
+            Save Settings
+          </Button>
+        </div>
+      </Drawer>
+
+      {/* Command Palette */}
+      <CommandPalette
+        open={commandPaletteOpen}
+        onOpenChange={setCommandPaletteOpen}
+        items={commandItems}
+        groups={{ files: 'Files' }}
+      />
 
       {/* Footer */}
       <footer className="text-center py-8 text-white/60">
