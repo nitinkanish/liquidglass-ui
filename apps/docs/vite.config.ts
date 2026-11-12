@@ -4,7 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/liquidglass-ui/',
+  base: process.env.DOCS_BASE ?? (process.env.VERCEL ? '/' : '/liquidglass-ui/'),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
