@@ -9,6 +9,7 @@ import { DocsPage } from './pages/DocsPage';
 import { ComponentDocsPage } from './pages/ComponentDocsPage';
 import { ComponentsPage } from './pages/ComponentsPage';
 import { ComparisonPage } from './pages/ComparisonPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 import { components } from './data/components';
 import './styles/globals.css';
 
@@ -99,6 +100,7 @@ function AppContent() {
             </DocsLayout>
           }
         />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
 
       <Footer />

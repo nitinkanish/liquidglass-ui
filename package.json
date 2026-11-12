@@ -14,14 +14,17 @@
     "test:e2e:chromium": "playwright test --project=chromium-desktop --project=chromium-mobile",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
+    "check:pack": "pnpm build:lib && cd packages/liquidglass-ui && publint && npm pack --dry-run",
     "format": "prettier --write \"**/*.{ts,tsx,css,md,json}\"",
     "clean": "pnpm -r clean"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@playwright/test": "^1.65.0",
     "@types/node": "^22.9.0",
     "playwright": "^1.65.0",
     "prettier": "^3.3.3",
+    "publint": "^0.3.25",
     "typescript": "^5.6.3"
   },
   "engines": {

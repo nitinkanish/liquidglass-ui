@@ -245,6 +245,17 @@ function isWebKit(): boolean {
   return /AppleWebKit\//.test(navigator.userAgent) && !/Chrom(?:e|ium)\//.test(navigator.userAgent);
 }
 
+/** True when feDisplacementMap can be constructed (Chromium/Safari/Firefox modern). */
+function supportsDisplacementMap(): boolean {
+  if (typeof document === 'undefined') return false;
+  try {
+    const el = document.createElementNS(SVG_NS, 'feDisplacementMap');
+    return !!el && el.namespaceURI === SVG_NS && 'scale' in el;
+  } catch {
+    return false;
+  }
+}
+
 interface LensConfig {
   maps: EncodedMaps;
   shine: number;
@@ -478,8 +489,14 @@ export function useGlisseEffect(
   const filterRef = useRef<SVGFilterElement | null>(null);
   const currentFilterId = useRef<string | null>(null);
   const lastDimensions = useRef<{ width: number; height: number; radius: number } | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const supportsRef = useRef<boolean | null>(null);
 
   const cleanup = useCallback(() => {
+    if (rafRef.current != null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
     if (filterRef.current) {
       filterRef.current.remove();
       filterRef.current = null;
@@ -492,6 +509,17 @@ export function useGlisseEffect(
   const updateFilter = useCallback((el: HTMLElement) => {
     if (!enabled || typeof document === 'undefined') {
       cleanup();
+      return;
+    }
+
+    // Safari/Firefox/legacy fallback: skip SVG displacement when unsupported.
+    // Callers still get rimGradient for a glass look via backdrop-filter.
+    if (supportsRef.current === null) {
+      supportsRef.current = supportsDisplacementMap();
+    }
+    if (!supportsRef.current) {
+      setFilterUrl(null);
+      setIsReady(true);
       return;
     }
 
@@ -557,11 +585,13 @@ export function useGlisseEffect(
     // Initial setup
     updateFilter(el);
 
-    // Watch for resizes
+    // Throttle ResizeObserver via rAF to avoid filter rebuild storms while dragging
     const observer = new ResizeObserver(() => {
-      if (ref.current) {
-        updateFilter(ref.current);
-      }
+      if (rafRef.current != null) return;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
+        if (ref.current) updateFilter(ref.current);
+      });
     });
     observer.observe(el);
 

@@ -373,7 +373,14 @@ export function supportsBackdropFilter(): boolean {
 }
 
 export function supportsSVGFilters(): boolean {
-  if (typeof document === 'undefined') return false;
-  const svg = document.createElementNS(SVG_NS, 'svg');
-  return 'getComputedStyle' in window && svg instanceof SVGElement;
+  if (typeof document === 'undefined' || typeof window === 'undefined') return false;
+  try {
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    if (!(svg instanceof SVGElement)) return false;
+    // feDisplacementMap powers glisse refraction — require it explicitly.
+    const displace = document.createElementNS(SVG_NS, 'feDisplacementMap');
+    return !!displace && displace.namespaceURI === SVG_NS && 'scale' in displace;
+  } catch {
+    return false;
+  }
 }

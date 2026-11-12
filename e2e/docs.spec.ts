@@ -39,8 +39,14 @@ test.describe('Documentation Site', () => {
     await expect(page.getByText('Glass Panel / Card')).toBeVisible();
   });
 
-  test('404-ish unknown component redirects', async ({ page }) => {
+  test('unknown component redirects to docs', async ({ page }) => {
     await page.goto('/docs/components/does-not-exist');
     await expect(page).toHaveURL(/\/docs$/);
+  });
+
+  test('unknown route shows 404 page', async ({ page }) => {
+    await page.goto('/this-page-does-not-exist');
+    await expect(page.getByRole('heading', { name: /page not found/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Home' })).toBeVisible();
   });
 });
