@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-11-12
+
+### Fixed
+
+- **TabBar / SegmentedControl click glitch** — the selection indicator no longer flickers, jumps, or overflows when changing tabs. Root cause: press/lift animated `width`/`height`/`top`/`left`, so `ResizeObserver` rebuilt the SVG displacement filter every animation frame (and lift toggled the filter on/off). Fix: transform-only glide (`translateX` + subtle press `scale`), fixed lens layout size, stable refraction filter, and `overflow: hidden` on the bar so the indicator stays clipped.
+- Keyboard arrow / Home / End navigation for TabBar and SegmentedControl
+- Indicator alignment covered by Playwright + unit selection tests
+
 ## [0.2.0] - 2026-11-12
 
 ### Added

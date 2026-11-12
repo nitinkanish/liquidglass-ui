@@ -103,7 +103,7 @@ export function Navbar({ onSearchOpen }: NavbarProps) {
                 LiquidGlass UI
               </span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--docs-accent)]/20 text-[var(--docs-accent)] font-medium shrink-0">
-                v0.2.0
+                v0.2.1
               </span>
             </Link>
 

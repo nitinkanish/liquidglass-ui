@@ -38,4 +38,28 @@ describe('TabBar', () => {
     );
     expect(screen.getByRole('tab', { name: 'Profile' })).toHaveAttribute('aria-selected', 'true');
   });
+
+  it('supports uncontrolled defaultValue', async () => {
+    render(<TabBar items={items} aria-label="Main" defaultValue="search" />);
+    expect(screen.getByRole('tab', { name: 'Search' })).toHaveAttribute('aria-selected', 'true');
+    await userEvent.click(screen.getByRole('tab', { name: 'Profile' }));
+    expect(screen.getByRole('tab', { name: 'Profile' })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('moves selection with arrow keys', async () => {
+    const onValueChange = vi.fn();
+    render(
+      <TabBar items={items} aria-label="Main" value="home" onValueChange={onValueChange} />
+    );
+    screen.getByRole('tab', { name: 'Home' }).focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(onValueChange).toHaveBeenCalledWith('search');
+  });
+
+  it('keeps indicator data-index in sync with selection', async () => {
+    render(<TabBar items={items} aria-label="Main" defaultValue="home" />);
+    expect(screen.getByTestId('tabbar-indicator')).toHaveAttribute('data-index', '0');
+    await userEvent.click(screen.getByRole('tab', { name: 'Profile' }));
+    expect(screen.getByTestId('tabbar-indicator')).toHaveAttribute('data-index', '2');
+  });
 });
