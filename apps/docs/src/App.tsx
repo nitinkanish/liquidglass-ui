@@ -54,7 +54,7 @@ function AppContent() {
     label: component.name,
     description: component.description,
     onSelect: () => {
-      window.location.href = `/liquidglass-ui/docs/components/${component.slug}`;
+      window.location.href = `${import.meta.env.BASE_URL}docs/components/${component.slug}`;
       setSearchOpen(false);
     },
   }));
@@ -224,7 +224,7 @@ function ThemeToggle() {
 
 function App() {
   return (
-    <BrowserRouter basename="/liquidglass-ui">
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
       <GlassProvider defaultTheme="dark">
         <ToastProvider>
           <AppContent />
