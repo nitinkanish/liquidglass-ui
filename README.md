@@ -26,6 +26,12 @@ LiquidGlass UI brings Apple's beautiful Liquid Glass design language to the web.
 ### Data Display
 ![Data Display](docs/assets/liquidglass-data-display.png)
 
+### Advanced Overlays (Drawer, Popover, Context Menu, Command Palette)
+![Overlays](docs/assets/liquidglass-overlays.png)
+
+### Floating Action Button
+![FAB](docs/assets/liquidglass-fab.png)
+
 ## Key Features
 
 - **57 Components** - Comprehensive UI toolkit with 41 component files
