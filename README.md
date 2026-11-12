@@ -9,6 +9,23 @@
 
 LiquidGlass UI brings Apple's beautiful Liquid Glass design language to the web. It features authentic glass effects with backdrop blur, SVG refraction/lensing, and smooth animations that respond to user interaction.
 
+## Screenshots
+
+### Hero / Landing Page
+![Hero](docs/assets/liquidglass-hero.png)
+
+### Buttons
+![Buttons](docs/assets/liquidglass-buttons.png)
+
+### Form Controls
+![Forms](docs/assets/liquidglass-forms.png)
+
+### Navigation
+![Navigation](docs/assets/liquidglass-navigation.png)
+
+### Data Display
+![Data Display](docs/assets/liquidglass-data-display.png)
+
 ## Key Features
 
 - **57 Components** - Comprehensive UI toolkit with 41 component files
