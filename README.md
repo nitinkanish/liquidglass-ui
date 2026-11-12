@@ -11,12 +11,13 @@ LiquidGlass UI brings Apple's beautiful Liquid Glass design language to the web.
 
 ## Key Features
 
-- **30+ Components** - Comprehensive UI toolkit
+- **57 Components** - Comprehensive UI toolkit with 41 component files
 - **Authentic Glass Effect** - Backdrop blur with SVG displacement filters
 - **Dark Mode** - Automatic light/dark theme switching
 - **Accessible** - Full ARIA support and keyboard navigation
 - **TypeScript** - Complete type definitions
 - **Zero Dependencies** - Only React as peer dependency
+- **86 Tests** - Comprehensive test coverage
 
 ## Quick Start
 
@@ -84,19 +85,22 @@ pnpm test
 - Button, IconButton, Toggle
 
 ### Forms
-- Input, Textarea, SearchField, Select, Checkbox, Radio, Switch, Slider
+- Input, Textarea, SearchField, Select, Checkbox, Radio, Switch, Slider, DatePicker
 
 ### Navigation
-- TabBar, SegmentedControl, Tabs, Navbar, Sidebar, Dock
+- TabBar, SegmentedControl, Tabs, Navbar, Sidebar, Dock, Carousel
 
 ### Overlays
-- Modal, Sheet, Menu, Tooltip
+- Modal, Sheet, Menu, Tooltip, Drawer, Popover, ContextMenu, CommandPalette
 
 ### Feedback
 - Toast, Alert, Progress, Spinner
 
 ### Data Display
 - Badge, Avatar, Chip, Accordion, Separator, Skeleton
+
+### Actions
+- FloatingActionButton (FAB)
 
 ## Browser Support
 
