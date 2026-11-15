@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useRef, useState, useCallback, RefObject } from 'react';
+import { useReducedTransparency } from './use-reduced-transparency';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -219,6 +220,10 @@ function encode(key: string, draw: () => LensMap): EncodedMaps | null {
     light: png(map.light),
   };
 
+  if (encodedCache.size > 256) {
+    const oldest = encodedCache.keys().next().value;
+    if (oldest !== undefined) encodedCache.delete(oldest);
+  }
   encodedCache.set(key, result);
   return result;
 }
@@ -250,10 +255,74 @@ function supportsDisplacementMap(): boolean {
   if (typeof document === 'undefined') return false;
   try {
     const el = document.createElementNS(SVG_NS, 'feDisplacementMap');
+    // Firefox cannot feed backdrop-filter output through an SVG filter, so an element
+    // filter would only displace the glass tint. Stay on blur + saturate there.
+    if (isFirefox()) return false;
     return !!el && el.namespaceURI === SVG_NS && 'scale' in el;
   } catch {
     return false;
   }
+}
+
+
+function isChromium(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return /Chrom(?:e|ium)\//.test(navigator.userAgent);
+}
+
+function isFirefox(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return /Firefox\//.test(navigator.userAgent);
+}
+
+/**
+ * True when `backdrop-filter: url(#svg)` really bends the backdrop. Only Chromium
+ * supports SVG filters inside backdrop-filter; Safari and Firefox keep the plain
+ * blur + saturate material (see README "Browser support").
+ */
+export function supportsBackdropLens(): boolean {
+  return supportsDisplacementMap() && isChromium();
+}
+
+interface PlaceOptions {
+  width: number;
+  height: number;
+  /** Displacement distance in px (0 = no bending, only light). */
+  reach: number;
+  /** Chromatic aberration: 0 = none, 1 = strong red/blue fringing. */
+  dispersion: number;
+  box: boolean;
+  /** Extra filter region around the box in px, so outer shadows are not clipped. */
+  pad?: number;
+}
+
+/**
+ * Sizes a filter built by buildFilter for one glass box and sets the
+ * displacement scale. Without this the userSpaceOnUse region defaults to the
+ * viewport (maps get stretched across the page) and feDisplacementMap's scale is 0.
+ * Per-channel scales differ by `dispersion`, which produces chromatic aberration.
+ */
+function placeFilter(filter: SVGFilterElement, { width, height, reach, dispersion, box, pad = 0 }: PlaceOptions): void {
+  if (!box) {
+    filter.setAttribute('x', String(-pad));
+    filter.setAttribute('y', String(-pad));
+    filter.setAttribute('width', String(width + pad * 2));
+    filter.setAttribute('height', String(height + pad * 2));
+  }
+  const rect = box
+    ? { x: 0, y: 0, width: 1, height: 1 }
+    : { x: 0, y: 0, width, height };
+  filter.querySelectorAll('feImage, feFlood').forEach((node) => {
+    for (const [key, value] of Object.entries(rect)) node.setAttribute(key, String(value));
+  });
+  const spectrum = [1 + 0.2 * dispersion, 1 + 0.1 * dispersion, 1];
+  const maps = filter.querySelectorAll('feDisplacementMap');
+  maps.forEach((node, index) => {
+    const channel = Math.floor(index / 2);
+    const axisSize = index % 2 === 0 ? width : height;
+    const scale = (box ? reach / axisSize : reach) * (spectrum[channel] ?? 1);
+    node.setAttribute('scale', String(scale));
+  });
 }
 
 interface LensConfig {
@@ -454,6 +523,90 @@ function getFilterContainer(): HTMLElement {
   return container;
 }
 
+const lenses = new WeakMap<HTMLElement, () => void>();
+
+export interface BackdropLensOptions {
+  /** Displacement as a fraction of the shorter side. */
+  bend?: number;
+  /** Chromatic aberration 0-1. */
+  dispersion?: number;
+}
+
+export function detachBackdropLens(el: HTMLElement): void {
+  lenses.get(el)?.();
+  lenses.delete(el);
+}
+
+/**
+ * Bends the backdrop behind `el` with a Liquid Glass lens (Chromium only). Rebuilds when
+ * the element is resized. Returns false when the browser cannot do it. Idempotent per element.
+ */
+export function attachBackdropLens(el: HTMLElement, options: BackdropLensOptions = {}): boolean {
+  detachBackdropLens(el);
+  const { bend = 0.3, dispersion = 0.4 } = options;
+  if (typeof document === 'undefined' || bend <= 0 || !supportsBackdropLens()) return false;
+
+  let current: SVGFilterElement | null = null;
+  let lastKey = '';
+  let raf: number | null = null;
+
+  const build = () => {
+    const width = Math.round(el.offsetWidth);
+    const height = Math.round(el.offsetHeight);
+    if (width < 2 || height < 2) return;
+    const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+    const key = `${width}:${height}:${radius}`;
+    if (key === lastKey) return;
+    lastKey = key;
+
+    const shape: Shape = { width, height, radius };
+    const lensOpts: LensOptions = { depth: 0.25, dome: 0.5, splay: 1, relative: true };
+    const light: LightOptions = { ...DEFAULT_LIGHT };
+    const density = 0.5;
+    const maps = encode(`lens:${key}`, () => lensMap(shape, lensOpts, light, density));
+    if (!maps) return;
+
+    const filter = buildFilter([{ maps, shine: 0 }], false);
+    placeFilter(filter, {
+      width,
+      height,
+      reach: bend * Math.min(width, height),
+      dispersion,
+      box: false,
+    });
+    const id = `lg-lens-${++filterIdCounter}`;
+    filter.id = id;
+    getFilterContainer().querySelector('defs')!.appendChild(filter);
+    current?.remove();
+    current = filter;
+    el.style.setProperty('--lg-filter', `url("#${id}") saturate(var(--lg-saturate, 1.6))`);
+    el.setAttribute('data-lg-lens', '');
+  };
+
+  build();
+  let observer: ResizeObserver | null = null;
+  if (typeof ResizeObserver !== 'undefined') {
+    observer = new ResizeObserver(() => {
+      if (raf != null) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        build();
+      });
+    });
+    observer.observe(el);
+  }
+
+  lenses.set(el, () => {
+    observer?.disconnect();
+    if (raf != null) cancelAnimationFrame(raf);
+    current?.remove();
+    current = null;
+    el.style.removeProperty('--lg-filter');
+    el.removeAttribute('data-lg-lens');
+  });
+  return true;
+}
+
 export interface UseGlisseEffectOptions {
   enabled?: boolean;
   depth?: number;
@@ -462,9 +615,19 @@ export interface UseGlisseEffectOptions {
   shine?: number;
   density?: number;
   lightAngle?: number;
+  /**
+   * Backdrop lensing strength as a fraction of the glass's shorter side (Chromium only).
+   * 0 disables real backdrop bending; the material falls back to blur + saturate.
+   * Default 0.3.
+   */
+  bend?: number;
+  /** Chromatic aberration at the lens edge, 0-1 (liquid-glass-react `aberrationIntensity` analogue). Default 0.4. */
+  dispersion?: number;
 }
 
 export interface GlisseEffectResult {
+  /** True when the backdrop is being refracted through an SVG lens (Chromium). */
+  lensActive?: boolean;
   filterUrl: string | null;
   rimGradient: string;
   isReady: boolean;
@@ -482,10 +645,14 @@ export function useGlisseEffect(
     shine = 0.3,
     density = 0.5,
     lightAngle = DEFAULT_LIGHT.angle,
+    bend = 0.3,
+    dispersion = 0.4,
   } = options;
+  const reducedTransparency = useReducedTransparency();
 
   const [filterUrl, setFilterUrl] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [lensActive, setLensActive] = useState(false);
   const filterRef = useRef<SVGFilterElement | null>(null);
   const currentFilterId = useRef<string | null>(null);
   const lastDimensions = useRef<{ width: number; height: number; radius: number } | null>(null);
@@ -502,12 +669,14 @@ export function useGlisseEffect(
       filterRef.current = null;
     }
     currentFilterId.current = null;
+    // Forget the last measured shape so a remount (React StrictMode) rebuilds the filter
+    lastDimensions.current = null;
     setFilterUrl(null);
     setIsReady(false);
   }, []);
 
   const updateFilter = useCallback((el: HTMLElement) => {
-    if (!enabled || typeof document === 'undefined') {
+    if (!enabled || reducedTransparency || typeof document === 'undefined') {
       cleanup();
       return;
     }
@@ -524,8 +693,10 @@ export function useGlisseEffect(
     }
 
     const rect = el.getBoundingClientRect();
-    const width = Math.max(1, Math.round(rect.width));
-    const height = Math.max(1, Math.round(rect.height));
+    // Layout size (not the transformed box): the filter lives in the element's own coordinate
+    // space, so a scaled thumb or an animating modal must not shrink the lens region.
+    const width = Math.max(1, Math.round(el.offsetWidth || rect.width));
+    const height = Math.max(1, Math.round(el.offsetHeight || rect.height));
     const computedStyle = getComputedStyle(el);
     const radius = parseFloat(computedStyle.borderRadius) || 0;
 
@@ -553,6 +724,8 @@ export function useGlisseEffect(
     const lensConfig: LensConfig = { maps, shine };
     const webKit = isWebKit();
     const filter = buildFilter([lensConfig], webKit);
+    // Element filter: light only (glints / rim), no displacement of the glass's own content.
+    placeFilter(filter, { width, height, reach: 0, dispersion: 0, box: webKit, pad: 64 });
 
     const filterId = `lg-glisse-${++filterIdCounter}`;
     filter.id = filterId;
@@ -571,7 +744,7 @@ export function useGlisseEffect(
 
     setFilterUrl(`url(#${filterId})`);
     setIsReady(true);
-  }, [enabled, depth, dome, splay, shine, density, lightAngle, cleanup]);
+  }, [enabled, reducedTransparency, depth, dome, splay, shine, density, lightAngle, cleanup]);
 
   useEffect(() => {
     if (!enabled || typeof document === 'undefined' || typeof ResizeObserver === 'undefined') {
@@ -601,13 +774,31 @@ export function useGlisseEffect(
     };
   }, [ref, enabled, updateFilter, cleanup]);
 
+  // Backdrop lens (Chromium): real refraction of what is behind the glass, exposed as
+  // --lg-filter for `backdrop-filter` in the shared CSS. Mirrors glisse's backdrop lens.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.setAttribute('data-lg-lens-owner', '');
+    if (enabled && !reducedTransparency && bend > 0) {
+      setLensActive(attachBackdropLens(el, { bend, dispersion }));
+    } else {
+      detachBackdropLens(el);
+      setLensActive(false);
+    }
+    return () => {
+      detachBackdropLens(el);
+      el.removeAttribute('data-lg-lens-owner');
+    };
+  }, [ref, enabled, reducedTransparency, bend, dispersion]);
+
   const rimGradient = `linear-gradient(${lightAngle + 90}deg, 
     rgba(255,255,255,0.12) 0%, 
     rgba(255,255,255,0.06) 30%, 
     transparent 50%, 
     rgba(0,0,0,0.04) 100%)`;
 
-  return { filterUrl, rimGradient, isReady };
+  return { filterUrl, rimGradient, isReady, lensActive };
 }
 
 export function clearGlisseCache(): void {
