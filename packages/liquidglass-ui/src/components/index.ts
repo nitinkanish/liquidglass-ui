@@ -4,7 +4,10 @@ export type { GlassProviderProps, GlassConfig, RefractionConfig, Theme, Resolved
 
 // Base Glass
 export { Glass } from './Glass';
-export type { GlassProps } from './Glass';
+export type { GlassProps, GlassEffect, GlassColorScheme } from './Glass';
+
+export { GlassContainer } from './GlassContainer';
+export type { GlassContainerProps } from './GlassContainer';
 
 export { GlassCard } from './GlassCard';
 export type { GlassCardProps } from './GlassCard';

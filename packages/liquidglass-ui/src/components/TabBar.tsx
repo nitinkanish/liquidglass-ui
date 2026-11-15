@@ -81,7 +81,7 @@ export const TabBar = forwardRef<HTMLDivElement, TabBarProps>(
     // Container refraction: stable size, always enabled (not gated on lift)
     const { filterUrl: containerFilter, rimGradient: containerRim, isReady: containerReady } =
       useGlisseEffect(containerRef, {
-        enabled: !reducedMotion,
+        enabled: true,
         depth: 6,
         dome: 3,
       });
@@ -90,7 +90,7 @@ export const TabBar = forwardRef<HTMLDivElement, TabBarProps>(
     const { filterUrl: lensFilter, rimGradient: lensRim, isReady: lensReady } = useGlisseEffect(
       lensRef,
       {
-        enabled: !reducedMotion,
+        enabled: true,
         depth: 3,
         dome: 2,
         splay: 0.5,

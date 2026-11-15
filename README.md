@@ -40,6 +40,38 @@ The glass refraction effect is based on [glisse](https://github.com/0kzh/glisse)
 </Glass>
 ```
 
+## Apple Liquid Glass
+
+Every `.lg-glass` surface (all components) shares one Liquid Glass material, tuned to Apple's public guidance (HIG *Materials*, WWDC25 *Meet Liquid Glass* / *Get to know the new design system*):
+
+| Apple behaviour | Where it lives |
+| --- | --- |
+| Lensing / refraction at the edges | SVG displacement lens on the backdrop (`--lg-filter`, Chromium), applied automatically to every glass surface by `GlassProvider` (`autoLens`) |
+| Chromatic aberration | `aberration` prop / `dispersion` option (0-1) |
+| Specular highlights that follow light | `--lg-light-angle` rim; `GlassProvider config={{ light: 'pointer' \| 'motion' \| 'static' }}`; per-element `specular="pointer"` |
+| Regular vs clear | `variant="clear"` / `effect="clear"`, plus `dim` for legibility over bright media |
+| Tint | `tintColor` (keeps blur and white rim, unlike `tint`) |
+| Adaptive light/dark | `colorScheme="light" \| "dark"` scopes glass tokens on any surface |
+| Fluid, interactive states | glass swells and glows on press (`--lg-press-scale`), `elasticity` stretches toward the pointer |
+| Merging glass | `<GlassContainer spacing={20}>` joins neighbouring glass with a liquid neck |
+| Concentric corners | use `border-radius: calc(parent - inset)` |
+| Accessibility | Reduce Transparency removes blur + lens (opaque surface), Reduce Motion removes press/bounce/elastic, `prefers-contrast: more` strengthens edges |
+| Capability tiers | `getGlassSupport()` returns `lens` (Chromium), `material` (Safari/Firefox), or `solid` |
+
+```tsx
+<GlassProvider config={{ light: 'pointer' }}>
+  <Glass effect="clear" dim tintColor="#0a84ff" elasticity={0.15} interactive>
+    Clear, tinted, interactive glass
+  </Glass>
+  <GlassContainer spacing={24} gap={10}>
+    <IconButton aria-label="One" icon={...} />
+    <IconButton aria-label="Two" icon={...} />
+  </GlassContainer>
+</GlassProvider>
+```
+
+**Honest limits of the web.** Browsers cannot sample the pixels behind a surface, so the native adaptive light/dark switch is approximated with `colorScheme`. Real backdrop refraction needs SVG filters inside `backdrop-filter`, which only Chromium supports; Safari and Firefox get the frosted material with the same specular rim, tint and shadows. Native glass also merges with a shader; `GlassContainer` is an approximation.
+
 ## Quick Start
 
 ```bash
@@ -125,10 +157,9 @@ pnpm test
 
 ## Browser Support
 
-- Chrome 76+
-- Firefox 103+
-- Safari 9+
-- Edge 79+
+- Chrome 76+ / Edge 79+: full material **plus** backdrop lens refraction
+- Safari and Firefox 103+: frosted material, specular rim, tint, press states (no backdrop refraction)
+- Without `backdrop-filter`: opaque surface fallback
 
 ## License
 
