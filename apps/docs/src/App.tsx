@@ -9,6 +9,7 @@ import { DocsPage } from './pages/DocsPage';
 import { ComponentDocsPage } from './pages/ComponentDocsPage';
 import { ComponentsPage } from './pages/ComponentsPage';
 import { ComparisonPage } from './pages/ComparisonPage';
+import { ShowcasePage } from './pages/ShowcasePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { components } from './data/components';
 import './styles/globals.css';
@@ -67,6 +68,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/components" element={<ComponentsPage />} />
+        <Route path="/showcase" element={<ShowcasePage />} />
         <Route path="/refraction" element={<ComparisonPage />} />
         <Route
           path="/docs"

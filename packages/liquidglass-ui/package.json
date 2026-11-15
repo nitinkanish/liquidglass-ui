@@ -1,6 +1,6 @@
 {
   "name": "@nkanish/liquidglass-ui",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Advanced Apple Liquid Glass (iOS 26 / macOS Tahoe) UI component library for React with SVG refraction effects, backdrop blur, and beautiful animations",
   "keywords": [
     "react",

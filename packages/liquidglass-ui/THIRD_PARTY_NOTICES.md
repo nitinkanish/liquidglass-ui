@@ -39,3 +39,23 @@ The following files contain code derived from glisse:
 
 The implementation ports glisse's displacement map generation algorithm (lensMap function),
 SVG filter construction (buildFilter), and PNG encoding for feImage elements.
+
+## liquid-glass-react
+
+Ideas for pointer-following specular borders, directional elasticity, chromatic aberration control, over-light shadowing and the Firefox fallback come from [liquid-glass-react](https://github.com/rdev/liquid-glass-react). No code was copied or added as a dependency; the behaviours were reimplemented.
+
+```
+MIT License
+
+Copyright 2025 MAX ROVENSKY
+```
+
+## @callstack/liquid-glass
+
+API ideas (`effect` regular/clear/none, `tintColor`, `colorScheme`, interactive mode, container merging with `spacing`, capability fallback) mirror [@callstack/liquid-glass](https://github.com/callstack/liquid-glass), a React Native wrapper over Apple's native `UIGlassEffect`. No code was copied or added as a dependency.
+
+```
+MIT License
+
+Copyright (c) 2025 Oskar Kwaśniewski
+```
