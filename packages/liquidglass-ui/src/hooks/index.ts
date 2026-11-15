@@ -7,3 +7,7 @@ export { usePressedState } from './use-pressed-state';
 export { useId } from './use-id';
 export { useGlisseEffect, clearGlisseCache } from './use-glisse-effect';
 export type { UseGlisseEffectOptions, GlisseEffectResult } from './use-glisse-effect';
+export { useElasticity, computeElasticity } from './use-elasticity';
+export type { UseElasticityOptions } from './use-elasticity';
+export { useLightSource, lightAngleFromVector, DEFAULT_LIGHT_ANGLE } from './use-light-source';
+export type { LightSourceMode } from './use-light-source';

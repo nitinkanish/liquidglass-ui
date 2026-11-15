@@ -11,3 +11,4 @@ export {
   type RimLightOptions,
   type GlassFilterResult,
 } from './svg-filters';
+export { getGlassSupport, type GlassSupport, type GlassSupportLevel } from './support';
