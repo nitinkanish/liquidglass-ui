@@ -18,7 +18,14 @@ export {
   useId,
   useGlisseEffect,
   clearGlisseCache,
+  useElasticity,
+  computeElasticity,
+  useLightSource,
+  lightAngleFromVector,
+  DEFAULT_LIGHT_ANGLE,
 } from './hooks';
+
+export type { UseElasticityOptions, LightSourceMode } from './hooks';
 
 export type { UseGlisseEffectOptions, GlisseEffectResult } from './hooks';
 
@@ -31,7 +38,9 @@ export {
   cleanupFilters,
   supportsBackdropFilter,
   supportsSVGFilters,
+  getGlassSupport,
 } from './core';
+export type { GlassSupport, GlassSupportLevel } from './core';
 
 export type {
   RefractionFilterOptions,

@@ -71,6 +71,7 @@ export const Chip = forwardRef<HTMLSpanElement, ChipProps>(
           'inline-flex items-center gap-1.5',
           'font-medium whitespace-nowrap',
           variant === 'glass' && 'lg-glass',
+          variant === 'glass' && isClickable && 'lg-interactive',
           variant === 'filled' && 'bg-[var(--lg-accent)] text-white',
           variant === 'outlined' && 'bg-transparent border border-[var(--lg-edge-strong)]',
           selected && variant === 'glass' && 'bg-[var(--lg-accent-light)] ring-1 ring-[var(--lg-accent)]',

@@ -1,4 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useLightSource, LightSourceMode } from '../hooks/use-light-source';
+import { useReducedMotion } from '../hooks/use-reduced-motion';
+import { startAutoLens } from '../core/auto-lens';
 
 export type Theme = 'light' | 'dark' | 'system';
 export type ResolvedTheme = 'light' | 'dark';
@@ -19,6 +22,17 @@ export interface GlassConfig {
   reducedMotion?: boolean;
   reducedTransparency?: boolean;
   refraction?: Partial<RefractionConfig>;
+  /**
+   * Light source for specular rims: `pointer` (default) lights the rim from the side the
+   * pointer is on, `motion` follows device tilt, `static` keeps Apple's top-left light.
+   * Reduce Motion forces `static`.
+   */
+  light?: LightSourceMode;
+  /**
+   * Refract the backdrop of every glass surface, not only the ones with their own lens
+   * (Chromium). Default true. Set false to keep plain blur + saturate everywhere.
+   */
+  autoLens?: boolean;
 }
 
 export interface GlassContextValue {
@@ -70,6 +84,14 @@ export function GlassProvider({
   });
 
   const [config, setConfigState] = useState<GlassConfig>(initialConfig);
+
+  const reducedMotion = useReducedMotion();
+  useLightSource(config.light ?? 'pointer', !reducedMotion);
+  const autoLens = config.autoLens ?? true;
+  useEffect(() => {
+    if (!autoLens) return;
+    return startAutoLens();
+  }, [autoLens]);
 
   const refraction: RefractionConfig = {
     ...DEFAULT_REFRACTION,

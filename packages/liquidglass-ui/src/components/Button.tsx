@@ -2,7 +2,7 @@ import { forwardRef, ButtonHTMLAttributes, ReactNode, CSSProperties, useRef } fr
 import { cn } from '../utils/cn';
 import { usePressedState } from '../hooks/use-pressed-state';
 import { useGlisseEffect } from '../hooks/use-glisse-effect';
-import { useReducedMotion } from '../hooks/use-reduced-motion';
+import { useElasticity } from '../hooks/use-elasticity';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'glass' | 'filled' | 'outlined' | 'ghost';
@@ -15,6 +15,10 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
   /** Disable glisse refraction effect. Defaults to false (refraction enabled for glass variant). */
   disableRefraction?: boolean;
+  /** Glass material for the `glass` variant. `clear` is Apple's highly translucent variant. */
+  effect?: 'regular' | 'clear';
+  /** Elastic lean toward the pointer, 0 = off (liquid-glass-react idea). */
+  elasticity?: number;
 }
 
 const sizeStyles = {
@@ -59,6 +63,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       fullWidth = false,
       disabled,
       disableRefraction = false,
+      effect = 'regular',
+      elasticity = 0,
       children,
       ...props
     },
@@ -67,11 +73,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const localRef = useRef<HTMLButtonElement>(null);
     const combinedRef = (ref as React.RefObject<HTMLButtonElement>) || localRef;
     const { isPressed, pressHandlers } = usePressedState({ disabled: disabled || loading });
-    const reducedMotion = useReducedMotion();
     const sizeConfig = sizeStyles[size];
+    useElasticity(combinedRef, { amount: elasticity });
     
     // Refraction for glass variant buttons
-    const shouldRefract = variant === 'glass' && !disableRefraction && !reducedMotion;
+    const shouldRefract = variant === 'glass' && !disableRefraction;
     const { filterUrl, rimGradient, isReady } = useGlisseEffect(combinedRef, {
       enabled: shouldRefract,
       depth: 6,
@@ -101,6 +107,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const baseClasses = cn(
       'lg-glass lg-interactive lg-focus-ring',
+      variant === 'glass' && effect === 'clear' && 'lg-glass-clear',
+      (variant === 'ghost' || variant === 'outlined') && 'lg-glass-flat',
       'inline-flex items-center justify-center',
       'font-medium transition-colors',
       'border-0 cursor-pointer',
@@ -133,6 +141,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         data-pressed={isPressed ? '' : undefined}
         data-variant={variant}
+        data-elastic={elasticity > 0 ? '' : undefined}
         data-destructive={destructive ? '' : undefined}
         data-icon={icon ? (children ? 'with-text' : 'only') : undefined}
         {...pressHandlers}

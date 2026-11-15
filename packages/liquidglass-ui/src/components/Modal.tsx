@@ -51,7 +51,7 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
     const config = sizeConfig[size];
 
     const { filterUrl, rimGradient, isReady } = useGlisseEffect(combinedRef, {
-      enabled: open && !disableRefraction && !reducedMotion,
+      enabled: open && !disableRefraction,
     });
 
     const handleClose = useCallback(() => {
