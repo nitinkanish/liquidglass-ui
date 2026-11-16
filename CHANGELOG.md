@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-11-15
+
+### Added
+
+- **Apple Liquid Glass fidelity across every component.** All components that use `.lg-glass` now share one material: specular rim (`::before`) driven by `--lg-light-angle`, inner luminance, top/bottom edge light, ambient + contact shadows, pointer sheen, and brightness/saturation tuned for light and dark.
+- **Real backdrop lensing** (Chromium): an SVG displacement lens bends what is behind the glass, with chromatic aberration. Applied automatically to every glass surface by `GlassProvider` (`config.autoLens`, default on) and by component hooks. New `bend` / `dispersion` options on `useGlisseEffect`, and `attachBackdropLens` / `detachBackdropLens`.
+- `Glass`: `variant="clear" | "regular"`, `effect="regular" | "clear" | "none"`, `tintColor`, `colorScheme`, `overLight`, `dim`, `elasticity`, `aberration`, `bend`, `specular="pointer"`, `animated`, `animationDuration`; interactive glass now swells and glows on press.
+- `GlassContainer` with `spacing` / `gap` / `direction`: neighbouring glass merges with a liquid neck.
+- `GlassProvider` `config.light` (`pointer` | `motion` | `static`): the specular light follows the pointer or device tilt. `useLightSource`, `lightAngleFromVector`.
+- `useElasticity` / `computeElasticity`, plus `elasticity` on `Button` and `IconButton`; `effect="clear"` on `Button` and `IconButton`.
+- `getGlassSupport()` capability tiers (`lens` / `material` / `solid`).
+- Scoped `data-lg-scheme="light" | "dark"` token blocks, new tokens (`--lg-specular`, `--lg-inner-glow`, `--lg-glass-clear`, `--lg-press-scale`, ...), `.lg-glass-clear`, `.lg-glass-flat` classes.
+- Docs: `/showcase` page demonstrating regular / clear / tinted / dark / merging glass.
+
+### Changed
+
+- Glass default material is lighter (`--lg-glass` alpha 0.5, `--lg-blur` 12px, 4px under an active lens) so refraction stays readable.
+- Reduce Motion no longer switches glass refraction off (Apple keeps the static lens); it disables press bounce, elasticity and the moving light. Reduce Transparency now drops blur, lens and filters entirely and uses an opaque surface. `prefers-contrast: more` strengthens edges.
+- `IconButton` gains the same lens as `Button`; ghost/outlined buttons use `.lg-glass-flat`; `Badge` `secondary` and clickable `Chip` use the shared material; `Switch`/`Slider` thumbs refract the track behind them.
+
+### Fixed
+
+- Glass refraction never activated under React StrictMode (remount skipped rebuilding the filter because the last-measured size was cached).
+- Glisse-style filter had no `scale` and no filter region, so displacement was a no-op and light maps stretched across the viewport. Filter regions are now sized to the element (layout size, so scaled thumbs are correct) and padded so shadows are not clipped.
+- Docs image paths ignored the `/liquidglass-ui/` base path.
+
+### Attribution
+
+Ideas from [liquid-glass-react](https://github.com/rdev/liquid-glass-react) (MIT, Max Rovensky) and [@callstack/liquid-glass](https://github.com/callstack/liquid-glass) (MIT, Oskar Kwaśniewski); see `THIRD_PARTY_NOTICES.md`. Visual targets are Apple's public Liquid Glass guidance (Figma kit not used).
+
 ## [0.2.1] - 2026-11-12
 
 ### Fixed

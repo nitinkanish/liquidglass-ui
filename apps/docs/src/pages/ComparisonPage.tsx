@@ -19,8 +19,8 @@ import {
 import 'glisse/styles.css';
 
 /** Local photographic backgrounds — detail textures show edge lensing clearly */
-const DETAIL_BG = '/images/newspaper.jpg';
-const STRIPES_BG = '/images/stripes.jpg';
+const DETAIL_BG = `${import.meta.env.BASE_URL}images/newspaper.jpg`;
+const STRIPES_BG = `${import.meta.env.BASE_URL}images/stripes.jpg`;
 
 interface ComparisonProps {
   title: string;

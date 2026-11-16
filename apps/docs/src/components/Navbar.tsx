@@ -44,6 +44,7 @@ interface NavbarProps {
 const navLinks = [
   { to: '/docs', label: 'Docs' },
   { to: '/components', label: 'Components' },
+  { to: '/showcase', label: 'Showcase' },
   { to: '/refraction', label: 'Refraction' },
 ];
 
@@ -103,7 +104,7 @@ export function Navbar({ onSearchOpen }: NavbarProps) {
                 LiquidGlass UI
               </span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--docs-accent)]/20 text-[var(--docs-accent)] font-medium shrink-0">
-                v0.2.1
+                v0.3.0
               </span>
             </Link>
 
