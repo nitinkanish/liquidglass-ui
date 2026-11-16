@@ -80,7 +80,8 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
 
     // Thumb lens — glisse uses depth:2, dome:6 on the switch thumb
     const { filterUrl, rimGradient, isReady } = useGlisseEffect(thumbRef, {
-      enabled: !reducedMotion,
+      enabled: true,
+      bend: 0.45,
       depth: 2,
       dome: 6,
       splay: 0.4,
@@ -140,8 +141,8 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
       transform: `translate(${thumbX}px, -50%) scale(${thumbScale})`,
       transition: reducedMotion ? 'none' : 'transform 200ms cubic-bezier(.25,.1,.25,1)',
       borderRadius: 9999,
-      backdropFilter: `blur(${2 * (1 - lift) + 0.5 * lift}px) brightness(${1 + 0.15 * (1 - lift)}) saturate(1.5)`,
-      WebkitBackdropFilter: `blur(${2 * (1 - lift) + 0.5 * lift}px) brightness(${1 + 0.15 * (1 - lift)}) saturate(1.5)`,
+      backdropFilter: `blur(${2 * (1 - lift) + 0.5 * lift}px) brightness(${1 + 0.15 * (1 - lift)}) var(--lg-filter, saturate(1.5))`,
+      WebkitBackdropFilter: `blur(${2 * (1 - lift) + 0.5 * lift}px) brightness(${1 + 0.15 * (1 - lift)}) var(--lg-filter, saturate(1.5))`,
       boxShadow: THUMB_SHADOW,
       pointerEvents: 'none',
       ...(isReady && filterUrl

@@ -71,7 +71,8 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
     const thumbScale = 0.6 + lift * 0.4;
 
     const { filterUrl, rimGradient, isReady } = useGlisseEffect(thumbRef, {
-      enabled: !reducedMotion,
+      enabled: true,
+      bend: 0.6,
       depth: 2,
       dome: 6,
       splay: 0.4,
@@ -110,8 +111,8 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
           ? 'none'
           : 'transform 150ms cubic-bezier(.25,.1,.25,1), left 50ms linear',
       borderRadius: 9999,
-      backdropFilter: `blur(${2 * (1 - lift) + 0.5 * lift}px) brightness(${1 + 0.15 * (1 - lift)}) saturate(1.5)`,
-      WebkitBackdropFilter: `blur(${2 * (1 - lift) + 0.5 * lift}px) brightness(${1 + 0.15 * (1 - lift)}) saturate(1.5)`,
+      backdropFilter: `blur(${2 * (1 - lift) + 0.5 * lift}px) brightness(${1 + 0.15 * (1 - lift)}) var(--lg-filter, saturate(1.5))`,
+      WebkitBackdropFilter: `blur(${2 * (1 - lift) + 0.5 * lift}px) brightness(${1 + 0.15 * (1 - lift)}) var(--lg-filter, saturate(1.5))`,
       boxShadow: THUMB_SHADOW,
       pointerEvents: 'none',
       ...(isReady && filterUrl

@@ -44,7 +44,7 @@ export const Sheet = forwardRef<HTMLDivElement, SheetProps>(
     const config = sizeConfig[size];
 
     const { filterUrl, rimGradient, isReady } = useGlisseEffect(combinedRef, {
-      enabled: open && !disableRefraction && !reducedMotion,
+      enabled: open && !disableRefraction,
     });
 
     const handleClose = useCallback(() => {

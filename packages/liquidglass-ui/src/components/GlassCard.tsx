@@ -1,7 +1,6 @@
 import { forwardRef, HTMLAttributes, CSSProperties, useRef } from 'react';
 import { cn } from '../utils/cn';
 import { useGlisseEffect } from '../hooks/use-glisse-effect';
-import { useReducedMotion } from '../hooks/use-reduced-motion';
 
 export interface GlassCardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'elevated' | 'outlined';
@@ -44,10 +43,8 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
   ) => {
     const localRef = useRef<HTMLDivElement>(null);
     const combinedRef = (ref as React.RefObject<HTMLDivElement>) || localRef;
-    const reducedMotion = useReducedMotion();
-    
     const { filterUrl, rimGradient, isReady } = useGlisseEffect(combinedRef, {
-      enabled: !disableRefraction && !reducedMotion,
+      enabled: !disableRefraction,
     });
 
     const customStyles: CSSProperties = {

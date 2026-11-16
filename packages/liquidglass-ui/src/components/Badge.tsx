@@ -14,9 +14,7 @@ const variantStyles = {
     color: 'white',
   },
   secondary: {
-    background: 'var(--lg-glass)',
     color: 'var(--lg-foreground)',
-    backdropFilter: 'blur(8px)',
   },
   success: {
     background: 'var(--lg-success)',
@@ -91,6 +89,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
         className={cn(
           'inline-flex items-center justify-center gap-1',
           'font-medium whitespace-nowrap',
+          variant === 'secondary' && 'lg-glass',
           className
         )}
         style={badgeStyles}

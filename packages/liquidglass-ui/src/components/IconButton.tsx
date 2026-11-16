@@ -1,6 +1,8 @@
-import { forwardRef, ButtonHTMLAttributes, ReactNode, CSSProperties } from 'react';
+import { forwardRef, useRef, ButtonHTMLAttributes, ReactNode, CSSProperties } from 'react';
 import { cn } from '../utils/cn';
 import { usePressedState } from '../hooks/use-pressed-state';
+import { useGlisseEffect } from '../hooks/use-glisse-effect';
+import { useElasticity } from '../hooks/use-elasticity';
 
 export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
@@ -10,6 +12,12 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
   tint?: string;
   loading?: boolean;
   'aria-label': string;
+  /** Glass material for the `glass` variant. */
+  effect?: 'regular' | 'clear';
+  /** Elastic lean toward the pointer, 0 = off. */
+  elasticity?: number;
+  /** Disable the lens refraction (blur + rim only). */
+  disableRefraction?: boolean;
 }
 
 const sizeStyles = {
@@ -30,10 +38,22 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       tint,
       loading = false,
       disabled,
+      effect = 'regular',
+      elasticity = 0,
+      disableRefraction = false,
       ...props
     },
-    ref
+    forwardedRef
   ) => {
+    const localRef = useRef<HTMLButtonElement>(null);
+    const ref = (forwardedRef as React.RefObject<HTMLButtonElement>) || localRef;
+    useElasticity(ref, { amount: elasticity });
+    const { filterUrl, rimGradient, isReady } = useGlisseEffect(ref, {
+      enabled: variant === 'glass' && !disableRefraction,
+      depth: 6,
+      dome: 3,
+      shine: 0.25,
+    });
     const { isPressed, pressHandlers } = usePressedState({ disabled: disabled || loading });
     const sizeConfig = sizeStyles[size];
 
@@ -48,8 +68,15 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       customStyles.color = tint;
     }
 
+    if (variant === 'glass' && isReady && filterUrl) {
+      customStyles.filter = filterUrl;
+      customStyles.backgroundImage = rimGradient;
+    }
+
     const baseClasses = cn(
       'lg-glass lg-interactive lg-focus-ring',
+      variant === 'glass' && effect === 'clear' && 'lg-glass-clear',
+      variant === 'ghost' && 'lg-glass-flat',
       'inline-flex items-center justify-center',
       'border-0 p-0',
       variant === 'filled' && 'text-white',
@@ -72,6 +99,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         style={{ ...customStyles, ...variantStyles }}
         disabled={disabled || loading}
         data-pressed={isPressed ? '' : undefined}
+        data-elastic={elasticity > 0 ? '' : undefined}
         {...pressHandlers}
         {...props}
       >
