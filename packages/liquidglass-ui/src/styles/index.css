@@ -6,7 +6,7 @@
 
 /* ===== CSS Custom Properties (Theming) ===== */
 
-:where(:root, [data-theme="light"]) {
+:where(:root, [data-theme="light"]), :where([data-lg-scheme="light"]) {
   /* Colors */
   --lg-foreground: rgb(0 0 0 / 0.88);
   --lg-foreground-secondary: rgb(60 60 67 / 0.8);
@@ -14,7 +14,7 @@
   --lg-background: rgb(255 255 255);
   
   /* Glass surfaces */
-  --lg-glass: rgb(255 255 255 / 0.65);
+  --lg-glass: rgb(255 255 255 / 0.5);
   --lg-glass-hover: rgb(255 255 255 / 0.75);
   --lg-glass-active: rgb(236 236 240 / 0.85);
   --lg-glass-elevated: rgb(255 255 255 / 0.8);
@@ -70,11 +70,27 @@
   --lg-on: #34c759;
   --lg-fill: #007aff;
   
+  /* Liquid Glass material (Apple HIG: Materials > Liquid Glass) */
+  --lg-light-angle: 315deg;          /* direction the specular light comes from (CSS angle) */
+  --lg-specular: 0.7;                /* rim highlight strength */
+  --lg-specular-hover: 0.95;
+  --lg-inset-top: 0.55;              /* top-edge specular line */
+  --lg-inset-bottom: 0.16;           /* bottom-edge bounce light */
+  --lg-inner-glow: 0.16;             /* soft inner luminance of the lens */
+  --lg-shadow-ambient: rgb(0 0 0 / 0.1);
+  --lg-glass-clear: rgb(255 255 255 / 0.1);
+  --lg-glass-clear-dim: rgb(0 0 0 / 0.22);   /* legibility dimming for clear glass over bright media */
+  --lg-glass-tint-base: rgb(255 255 255 / 0.2);
+  --lg-brightness: 1.04;
+  --lg-press-scale: 1.04;            /* interactive glass swells slightly under the finger */
+  --lg-sheen: 0.18;                  /* pointer-following sheen */
+
   /* Blur & filter values */
-  --lg-blur: 20px;
+  --lg-blur: 12px;
+  --lg-blur-lens: 4px;     /* blur left under a real lens so edge refraction stays crisp */
   --lg-blur-sm: 8px;
   --lg-blur-lg: 40px;
-  --lg-saturate: 1.8;
+  --lg-saturate: 1.6;
   
   /* Animation */
   --lg-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -95,13 +111,13 @@
 
 /* ===== Dark Mode ===== */
 
-:where([data-theme="dark"]) {
+:where([data-theme="dark"]), :where([data-lg-scheme="dark"]) {
   --lg-foreground: rgb(255 255 255);
   --lg-foreground-secondary: rgb(235 235 245 / 0.8);
   --lg-muted: rgb(235 235 245 / 0.6);
   --lg-background: rgb(0 0 0);
   
-  --lg-glass: rgb(40 40 40 / 0.62);
+  --lg-glass: rgb(40 40 40 / 0.5);
   --lg-glass-hover: rgb(50 50 50 / 0.7);
   --lg-glass-active: rgb(70 70 70 / 0.62);
   --lg-glass-elevated: rgb(50 50 50 / 0.75);
@@ -137,6 +153,19 @@
   --lg-segment-label: rgb(255 255 255);
   --lg-segment-lens: transparent;
   
+  --lg-light-angle: 315deg;
+  --lg-specular: 0.55;
+  --lg-specular-hover: 0.85;
+  --lg-inset-top: 0.28;
+  --lg-inset-bottom: 0.07;
+  --lg-inner-glow: 0.07;
+  --lg-shadow-ambient: rgb(0 0 0 / 0.38);
+  --lg-glass-clear: rgb(255 255 255 / 0.06);
+  --lg-glass-clear-dim: rgb(0 0 0 / 0.3);
+  --lg-glass-tint-base: rgb(40 40 40 / 0.22);
+  --lg-brightness: 1.08;
+  --lg-sheen: 0.12;
+  
   --lg-accent: #0a84ff;
   --lg-accent-hover: #409cff;
   --lg-accent-light: rgb(10 132 255 / 0.15);
@@ -158,7 +187,7 @@
     --lg-muted: rgb(235 235 245 / 0.6);
     --lg-background: rgb(0 0 0);
     
-    --lg-glass: rgb(40 40 40 / 0.62);
+    --lg-glass: rgb(40 40 40 / 0.5);
     --lg-glass-hover: rgb(50 50 50 / 0.7);
     --lg-glass-active: rgb(70 70 70 / 0.62);
     --lg-glass-elevated: rgb(50 50 50 / 0.75);
@@ -194,6 +223,19 @@
     --lg-segment-label: rgb(255 255 255);
     --lg-segment-lens: transparent;
     
+    --lg-light-angle: 315deg;
+    --lg-specular: 0.55;
+    --lg-specular-hover: 0.85;
+    --lg-inset-top: 0.28;
+    --lg-inset-bottom: 0.07;
+    --lg-inner-glow: 0.07;
+    --lg-shadow-ambient: rgb(0 0 0 / 0.38);
+    --lg-glass-clear: rgb(255 255 255 / 0.06);
+    --lg-glass-clear-dim: rgb(0 0 0 / 0.3);
+    --lg-glass-tint-base: rgb(40 40 40 / 0.22);
+    --lg-brightness: 1.08;
+    --lg-sheen: 0.12;
+    
     --lg-accent: #0a84ff;
     --lg-accent-hover: #409cff;
     --lg-accent-light: rgb(10 132 255 / 0.15);
@@ -218,44 +260,126 @@
 }
 
 /* ===== Reduced Transparency ===== */
+/* Apple "Reduce Transparency": glass becomes an opaque, frosted-free surface with a crisp edge. */
 
 @media (prefers-reduced-transparency: reduce) {
   :root {
     --lg-glass: rgb(245 245 247);
     --lg-glass-hover: rgb(240 240 242);
     --lg-glass-active: rgb(230 230 235);
+    --lg-glass-elevated: rgb(250 250 252);
+    --lg-glass-clear: rgb(245 245 247);
+    --lg-glass-tint-base: rgb(245 245 247);
     --lg-blur: 0px;
     --lg-blur-sm: 0px;
     --lg-blur-lg: 0px;
   }
   
-  [data-theme="dark"] {
+  [data-theme="dark"], [data-lg-scheme="dark"] {
     --lg-glass: rgb(44 44 46);
     --lg-glass-hover: rgb(54 54 56);
     --lg-glass-active: rgb(64 64 66);
+    --lg-glass-elevated: rgb(50 50 52);
+    --lg-glass-clear: rgb(44 44 46);
+    --lg-glass-tint-base: rgb(44 44 46);
+  }
+
+  .lg-glass {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --lg-glass: rgb(44 44 46);
+    --lg-glass-hover: rgb(54 54 56);
+    --lg-glass-active: rgb(64 64 66);
+    --lg-glass-elevated: rgb(50 50 52);
+    --lg-glass-clear: rgb(44 44 46);
+    --lg-glass-tint-base: rgb(44 44 46);
+  }
+}
+
+/* ===== Increased Contrast ===== */
+
+@media (prefers-contrast: more) {
+  :root {
+    --lg-specular: 1;
+    --lg-edge: rgb(128 128 128 / 0.7);
+    --lg-edge-strong: rgb(128 128 128 / 0.9);
   }
 }
 
 /* ===== Base Glass Styles ===== */
+/*
+ * The shared Liquid Glass material. Every component that uses `.lg-glass` inherits:
+ *   1. a lensed backdrop (blur + saturate + brightness, plus a real SVG lens in Chromium via --lg-filter)
+ *   2. a specular rim that follows --lg-light-angle (::before)
+ *   3. an inner luminance + top/bottom edge light (inset shadows)
+ *   4. a soft pointer sheen (::after)
+ *   5. ambient + contact shadows
+ *   6. interactive swell / bounce on press, reduced-motion / reduced-transparency fallbacks
+ */
 
 .lg-glass {
+  --lg-glass-shadow:
+    inset 0 0 0 0.5px var(--lg-edge),
+    inset 0 1px 1px rgb(255 255 255 / var(--lg-inset-top, 0.5)),
+    inset 0 -1px 1px rgb(255 255 255 / var(--lg-inset-bottom, 0.14)),
+    inset 0 0 18px rgb(255 255 255 / var(--lg-inner-glow, 0.14)),
+    0 6px 20px var(--lg-shadow-ambient, rgb(0 0 0 / 0.1)),
+    0 1px 3px var(--lg-drop);
   position: relative;
   background-color: var(--lg-glass);
   background-image: var(--lg-rim, none);
   background-size: 100% 100%;
-  -webkit-backdrop-filter: blur(var(--lg-blur, 20px)) saturate(var(--lg-saturate, 1.8));
-  backdrop-filter: blur(var(--lg-blur, 20px)) saturate(var(--lg-saturate, 1.8));
-  box-shadow:
-    inset 0 0 0 0.5px var(--lg-edge),
-    0 1px 3px var(--lg-drop);
-  transition: background-color var(--lg-duration) var(--lg-ease);
+  -webkit-backdrop-filter: blur(var(--lg-blur, 14px)) var(--lg-filter, saturate(var(--lg-saturate, 1.6))) brightness(var(--lg-brightness, 1));
+  backdrop-filter: blur(var(--lg-blur, 14px)) var(--lg-filter, saturate(var(--lg-saturate, 1.6))) brightness(var(--lg-brightness, 1));
+  box-shadow: var(--lg-glass-shadow);
+  transition:
+    background-color var(--lg-material-duration, var(--lg-duration)) var(--lg-ease),
+    box-shadow var(--lg-material-duration, var(--lg-duration)) var(--lg-ease),
+    -webkit-backdrop-filter var(--lg-material-duration, var(--lg-duration)) var(--lg-ease),
+    backdrop-filter var(--lg-material-duration, var(--lg-duration)) var(--lg-ease);
 }
 
+/* A real backdrop lens is active: keep the backdrop sharper so the bent edge reads as glass */
+.lg-glass[data-lg-lens] {
+  --lg-blur: var(--lg-blur-lens, 4px);
+}
+
+/* When the SVG light layer (glisse filter) paints the rim, drop the CSS edge lines */
 .lg-glass[data-rim] {
-  box-shadow: 0 1px 3px var(--lg-drop);
+  --lg-glass-shadow:
+    inset 0 0 18px rgb(255 255 255 / var(--lg-inner-glow, 0.14)),
+    0 6px 20px var(--lg-shadow-ambient, rgb(0 0 0 / 0.1)),
+    0 1px 3px var(--lg-drop);
 }
 
-/* Pointer-reactive highlight */
+/* Specular rim: bright where the light hits, a softer bounce on the opposite edge */
+.lg-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    var(--lg-light-angle, 315deg),
+    rgb(255 255 255 / calc(var(--lg-specular, 0.7) * 0.5)) 0%,
+    rgb(255 255 255 / 0) 30%,
+    rgb(255 255 255 / 0) 70%,
+    rgb(255 255 255 / var(--lg-specular, 0.7)) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  transition: opacity var(--lg-duration) var(--lg-ease);
+}
+
+/* Pointer-reactive sheen */
 .lg-glass::after {
   content: "";
   position: absolute;
@@ -264,8 +388,8 @@
   pointer-events: none;
   background: radial-gradient(
     circle 240px at var(--lg-pointer-x, 50%) var(--lg-pointer-y, 50%),
-    rgb(255 255 255 / 0.06),
-    rgb(255 255 255 / 0.03) 50%,
+    rgb(255 255 255 / var(--lg-sheen, 0.14)),
+    rgb(255 255 255 / calc(var(--lg-sheen, 0.14) * 0.4)) 50%,
     transparent
   );
   opacity: 0;
@@ -277,26 +401,164 @@
   opacity: 1;
 }
 
-.lg-glass[data-pressed]::after {
+.lg-glass[data-pressed]::after,
+.lg-glass:is(.lg-interactive, [data-live]):active::after {
   opacity: 1;
   transition-duration: 0ms;
 }
 
-/* Glass variants */
+@media (hover: hover) and (pointer: fine) {
+  .lg-glass:is(.lg-interactive, [data-live]):hover::before,
+  .lg-glass[data-hover]::before {
+    --lg-specular: var(--lg-specular-hover, 0.95);
+  }
+}
+
+/* Interactive glass: swells slightly and glows under the finger/pointer, then bounces back */
+.lg-glass:is(.lg-interactive, [data-live]),
+.lg-glass[data-elastic] {
+  scale: calc(var(--lg-press-s, 1) * var(--lg-es-x, 1)) calc(var(--lg-press-s, 1) * var(--lg-es-y, 1));
+  translate: var(--lg-et-x, 0px) var(--lg-et-y, 0px);
+  transition:
+    scale 420ms var(--lg-ease-spring),
+    translate 260ms var(--lg-ease-out),
+    background-color var(--lg-duration) var(--lg-ease),
+    box-shadow var(--lg-duration) var(--lg-ease);
+}
+
+.lg-glass:is(.lg-interactive, [data-live]):active:not(:disabled):not([aria-disabled="true"]),
+.lg-glass:is(.lg-interactive, [data-live])[data-pressed] {
+  --lg-press-s: var(--lg-press-scale, 1.04);
+  --lg-specular: var(--lg-specular-hover, 0.95);
+  --lg-inner-glow: 0.3;
+}
+
+/* ===== Glass variants (Apple: regular / clear, plus tint) ===== */
+
+/* Regular, larger and more separated: sheets, menus, popovers, modals */
 .lg-glass-elevated {
-  background-color: var(--lg-glass-elevated);
-  box-shadow:
+  --lg-blur: 20px;
+  --lg-glass-shadow:
     inset 0 0 0 0.5px var(--lg-edge),
-    var(--lg-shadow-lg);
+    inset 0 1px 1px rgb(255 255 255 / var(--lg-inset-top, 0.5)),
+    inset 0 -1px 1px rgb(255 255 255 / var(--lg-inset-bottom, 0.14)),
+    inset 0 0 22px rgb(255 255 255 / var(--lg-inner-glow, 0.14)),
+    0 18px 48px var(--lg-shadow-ambient, rgb(0 0 0 / 0.14)),
+    0 2px 6px var(--lg-drop);
+  background-color: var(--lg-glass-elevated);
+}
+
+.lg-glass-elevated[data-rim] {
+  --lg-glass-shadow:
+    inset 0 0 22px rgb(255 255 255 / var(--lg-inner-glow, 0.14)),
+    0 18px 48px var(--lg-shadow-ambient, rgb(0 0 0 / 0.14)),
+    0 2px 6px var(--lg-drop);
 }
 
 .lg-glass-subtle {
   --lg-blur: var(--lg-blur-sm);
+  --lg-inner-glow: 0.08;
   background-color: rgb(255 255 255 / 0.4);
 }
 
-[data-theme="dark"] .lg-glass-subtle {
+[data-theme="dark"] .lg-glass-subtle,
+[data-lg-scheme="dark"].lg-glass-subtle {
   background-color: rgb(40 40 40 / 0.4);
+}
+
+/* Clear: highly translucent, minimal blur. Use over media-rich content. */
+.lg-glass-clear {
+  --lg-blur: 3px;
+  --lg-saturate: 1.35;
+  --lg-brightness: 1;
+  --lg-inner-glow: 0.08;
+  background-color: var(--lg-glass-clear);
+}
+
+/* Optional dimming layer so foreground stays legible over bright content (Apple recommends ~35%). */
+.lg-glass-clear[data-dim] {
+  background-color: var(--lg-glass-clear-dim);
+}
+
+/* Tinted glass: color is blended into the material, the specular rim stays white */
+.lg-glass[data-tinted] {
+  background-color: var(--lg-glass-tint-base);
+}
+
+@supports (background: color-mix(in srgb, red, blue)) {
+  .lg-glass[data-tinted] {
+    background-color: color-mix(in srgb, var(--lg-tint-color) var(--lg-tint-amount, 62%), var(--lg-glass-tint-base));
+  }
+}
+
+/* Over light content (liquid-glass-react "overLight"): dim the material and deepen its shadow */
+.lg-glass[data-over-light] {
+  --lg-shadow-ambient: rgb(0 0 0 / 0.28);
+  background-color: color-mix(in srgb, rgb(0 0 0 / 0.14), var(--lg-glass));
+}
+
+/* "effect=none": materialises back to a transparent surface (animates via the transitions above) */
+.lg-glass[data-effect="none"] {
+  --lg-blur: 0px;
+  --lg-saturate: 1;
+  --lg-brightness: 1;
+  --lg-glass-shadow: none;
+  background-color: transparent;
+  background-image: none;
+}
+
+.lg-glass[data-effect="none"]::before,
+.lg-glass[data-effect="none"]::after {
+  opacity: 0;
+}
+
+/* Flat: keeps interaction states but drops the glass edge lighting (ghost / outlined controls) */
+.lg-glass-flat {
+  --lg-glass-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.lg-glass-flat::before {
+  display: none;
+}
+
+/* Merged glass groups (GlassContainer) */
+.lg-glass-container {
+  position: relative;
+  display: inline-flex;
+}
+
+.lg-glass-bridge {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lg-glass-bridge::before {
+  display: none;
+}
+
+/* ===== Fallbacks ===== */
+
+/* Browsers without backdrop-filter: an opaque-ish surface instead of a see-through one */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lg-glass {
+    background-color: var(--lg-surface);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-glass,
+  .lg-glass::before,
+  .lg-glass::after {
+    transition-duration: 0ms !important;
+  }
+
+  .lg-glass:is(.lg-interactive, [data-live]),
+  .lg-glass[data-elastic] {
+    --lg-press-scale: 1;
+  }
 }
 
 /* ===== Backdrop Container ===== */
