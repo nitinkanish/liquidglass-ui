@@ -11,3 +11,5 @@ export { useElasticity, computeElasticity } from './use-elasticity';
 export type { UseElasticityOptions } from './use-elasticity';
 export { useLightSource, lightAngleFromVector, DEFAULT_LIGHT_ANGLE } from './use-light-source';
 export type { LightSourceMode } from './use-light-source';
+export { useScrollState, nextScrollState } from './use-scroll-state';
+export type { UseScrollStateOptions, ScrollState, ScrollDirection, ScrollTarget } from './use-scroll-state';

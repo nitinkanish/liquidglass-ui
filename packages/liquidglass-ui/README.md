@@ -141,7 +141,7 @@ pnpm test
 - Input, Textarea, SearchField, Select, Checkbox, Radio, Switch, Slider, DatePicker
 
 ### Navigation
-- TabBar, SegmentedControl, Tabs, Navbar, Sidebar, Dock, Carousel
+- TabBar, SegmentedControl, Tabs, Navbar, GlassHeader, Sidebar, Dock, Carousel
 
 ### Overlays
 - Modal, Sheet, Menu, Tooltip, Drawer, Popover, ContextMenu, CommandPalette
@@ -154,6 +154,28 @@ pnpm test
 
 ### Actions
 - FloatingActionButton (FAB)
+
+### Effects
+- MorphingGlass (WebGL glass body morphing between sphere, drop, pebble, plate, disc and pill)
+
+### GlassHeader and MorphingGlass
+
+```tsx
+import { GlassHeader, MorphingGlass, Button } from '@nkanish/liquidglass-ui';
+
+<GlassHeader
+  variant="floating"            // or "bar"
+  tint="warm"                   // neutral | warm | cool | clear | any CSS color
+  logo={<Logo />}
+  links={[{ label: 'Product', href: '/', active: true }, { label: 'Pricing', href: '/pricing' }]}
+  actions={<Button size="sm" variant="filled">Get started</Button>}
+  hideOnScroll
+/>
+
+<MorphingGlass shapes={['sphere', 'drop', 'pill']} duration={1400} dispersion={0.8} />
+```
+
+`GlassHeader` thickens and tightens once the page scrolls, can hide on scroll down, and collapses its links into a glass menu below `mobileBreakpoint`. `MorphingGlass` raymarches a signed distance field in WebGL with per-channel refraction; it pauses offscreen, shows a still shape under Reduce Motion and falls back to the CSS glass material without WebGL.
 
 ## Browser Support
 
