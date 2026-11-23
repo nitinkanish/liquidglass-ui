@@ -58,6 +58,8 @@ const COMPONENT_SLUGS = [
   'separator',
   'skeleton',
   'floating-action-button',
+  'glass-header',
+  'morphing-glass',
 ];
 
 test.describe('component docs pages', () => {

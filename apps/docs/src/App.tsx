@@ -11,6 +11,9 @@ import { ComponentsPage } from './pages/ComponentsPage';
 import { ComparisonPage } from './pages/ComparisonPage';
 import { ShowcasePage } from './pages/ShowcasePage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { GlassHeaderDocsPage } from './pages/GlassHeaderDocsPage';
+import { MorphingGlassDocsPage } from './pages/MorphingGlassDocsPage';
+import { GlassHeaderDemoPage, MorphingGlassDemoPage } from './pages/DemoPages';
 import { components } from './data/components';
 import './styles/globals.css';
 
@@ -36,6 +39,7 @@ function DocsLayout({ children }: { children: React.ReactNode }) {
 }
 
 function AppContent() {
+  const location = useLocation();
   const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
@@ -59,6 +63,19 @@ function AppContent() {
       setSearchOpen(false);
     },
   }));
+
+  if (location.pathname.startsWith('/demos/')) {
+    return (
+      <>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/demos/glass-header" element={<GlassHeaderDemoPage />} />
+          <Route path="/demos/morphing-glass" element={<MorphingGlassDemoPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </>
+    );
+  }
 
   return (
     <>
@@ -91,6 +108,22 @@ function AppContent() {
           element={
             <DocsLayout>
               <ThemingPage />
+            </DocsLayout>
+          }
+        />
+        <Route
+          path="/docs/components/glass-header"
+          element={
+            <DocsLayout>
+              <GlassHeaderDocsPage />
+            </DocsLayout>
+          }
+        />
+        <Route
+          path="/docs/components/morphing-glass"
+          element={
+            <DocsLayout>
+              <MorphingGlassDocsPage />
             </DocsLayout>
           }
         />
