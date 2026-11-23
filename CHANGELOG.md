@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **`GlassHeader`**: a site header built from the shared Liquid Glass material (`Glass`), so it keeps the same lens, rim light and tint behaviour as every other surface.
+  - `variant="bar" | "floating"` (inset pill), plus `actionsPlacement="outside"` to put the CTA in its own pill.
+  - `sticky` (default) or `fixed` positioning.
+  - A scroll-reactive state (`data-scrolled`): denser material, a tighter pill and a deeper shadow. Tune it with `scrollThreshold`, use `scrollContainer` for nested scrollers, and listen with `onScrolledChange`.
+  - `hideOnScroll`, and `transparentAtTop` for the bar.
+  - `tint="neutral" | "warm" | "cool" | "clear"` or any CSS color, and `colorScheme` for theme.
+  - A responsive glass mobile menu below `mobileBreakpoint` (controlled or uncontrolled; Escape, link tap and focus handling).
+  - `renderLink` for router links.
+  - SSR-safe, with a pre-hydration CSS collapse on narrow screens, and Reduce Motion support.
+- **`MorphingGlass`**: a thick glass body that morphs continuously between `sphere`, `drop`, `pebble`, `plate`, `disc` and `pill`.
+  - Rendered with WebGL signed-distance-field raymarching: two shape SDFs are blended, and R/G/B are refracted separately for chromatic dispersion, with Fresnel reflection, specular highlights and a thin-film rim.
+  - Props: `shapes` / `shape`, `duration`, `hold`, `easing` (`linear`, `ease-in-out`, `ease-out`, `spring` or a function), `autoplay` / `paused` / `loop`, `rotate`, `thickness`, `size`, `dispersion`, `ior`, `tint`, `tintStrength`, `background` (`stripes`, `transparent` or an image URL) and `colors`.
+  - An imperative handle with `play`, `pause` and `goTo`.
+  - Pauses offscreen and in hidden tabs, shows a still shape under Reduce Motion, falls back to the CSS glass material without WebGL, and is SSR-safe.
+- `useScrollState` hook (`scrolled`, `direction`, `y`; window or a scroll container) and `nextScrollState`.
+- Morph helpers: `MORPH_SHAPES`, `morphFrameAt`, `resolveMorphEasing`, `parseColor` and `supportsWebGL`.
+- Docs:
+  - `/docs/components/glass-header`, with a live demo over scrolling content and controls.
+  - `/docs/components/morphing-glass`, with a poster-style hero and controls.
+  - Chrome-free demos at `/demos/glass-header` and `/demos/morphing-glass`.
+  - A new "Effects" category.
+- Tests: unit tests for both components and the scroll hook, plus Playwright e2e specs (`e2e/glass-header.spec.ts`, `e2e/morphing-glass.spec.ts`).
+
 ## [0.3.0] - 2026-11-15
 
 ### Added

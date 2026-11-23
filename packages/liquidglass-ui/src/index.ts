@@ -23,7 +23,11 @@ export {
   useLightSource,
   lightAngleFromVector,
   DEFAULT_LIGHT_ANGLE,
+  useScrollState,
+  nextScrollState,
 } from './hooks';
+
+export type { UseScrollStateOptions, ScrollState, ScrollDirection, ScrollTarget } from './hooks';
 
 export type { UseElasticityOptions, LightSourceMode } from './hooks';
 
@@ -39,8 +43,13 @@ export {
   supportsBackdropFilter,
   supportsSVGFilters,
   getGlassSupport,
+  MORPH_SHAPES,
+  morphFrameAt,
+  resolveMorphEasing,
+  parseColor,
 } from './core';
 export type { GlassSupport, GlassSupportLevel } from './core';
+export type { MorphShape, MorphEasing, MorphEasingName, MorphFrame, MorphTimelineOptions } from './core';
 
 export type {
   RefractionFilterOptions,

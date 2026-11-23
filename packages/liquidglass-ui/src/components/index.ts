@@ -134,3 +134,10 @@ export type { FloatingActionButtonProps } from './FloatingActionButton';
 
 export { DatePicker } from './DatePicker';
 export type { DatePickerProps } from './DatePicker';
+
+// Headers & effects
+export { GlassHeader } from './GlassHeader';
+export type { GlassHeaderProps, GlassHeaderLink, GlassHeaderVariant, GlassHeaderTint } from './GlassHeader';
+
+export { MorphingGlass, supportsWebGL } from './MorphingGlass';
+export type { MorphingGlassProps, MorphingGlassHandle, MorphingGlassBackground, MorphingGlassColors } from './MorphingGlass';
